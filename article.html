@@ -4,6 +4,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>文章 - Amorend</title>
+    <meta name="description" content="Amorend 的研究手记 —— AI Agent、LLM、医学影像、计算机视觉方向的文章。">
+    <meta name="author" content="Amorend">
+    <meta name="theme-color" content="#11110f">
+    <link rel="canonical" href="https://amorend.top/article.html">
+    <meta property="og:type" content="article">
+    <meta property="og:site_name" content="Amorend">
+    <meta property="og:locale" content="zh_CN">
+    <meta property="og:url" content="https://amorend.top/article.html">
+    <meta property="og:title" content="文章 - Amorend">
+    <meta property="og:description" content="Amorend 的研究手记 —— AI Agent、LLM、医学影像、计算机视觉方向的文章。">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="文章 - Amorend">
+    <meta name="twitter:description" content="Amorend 的研究手记。">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@studio-freight/lenis@1.0.42/dist/lenis.min.js"></script>
@@ -627,6 +640,22 @@
             return params.get('post') || '';
         }
 
+        function setMeta(selector, attr, value) {
+            const el = document.querySelector(selector);
+            if (el) el.setAttribute(attr, value);
+        }
+
+        function updateArticleMeta({ title, description, url }) {
+            document.title = title;
+            setMeta('meta[name="description"]', 'content', description);
+            setMeta('link[rel="canonical"]', 'href', url);
+            setMeta('meta[property="og:title"]', 'content', title);
+            setMeta('meta[property="og:description"]', 'content', description);
+            setMeta('meta[property="og:url"]', 'content', url);
+            setMeta('meta[name="twitter:title"]', 'content', title);
+            setMeta('meta[name="twitter:description"]', 'content', description);
+        }
+
         function navCard(post, label) {
             if (!post) return '<span></span>';
             return `
@@ -644,7 +673,11 @@
             const post = posts[index];
 
             if (!post) {
-                document.title = '文章不存在 - Amorend';
+                updateArticleMeta({
+                    title: '文章不存在 - Amorend',
+                    description: '这个文章 ID 没有出现在博客索引里，回到博客列表重新选择一篇吧。',
+                    url: 'https://amorend.top/article.html'
+                });
                 articleRoot.innerHTML = `
                     <section class="article-hero">
                         <div class="article-meta"><span class="tag">404</span></div>
@@ -665,7 +698,11 @@
                 ? marked.parse(article.content)
                 : '<pre>' + escapeHTML(article.content) + '</pre>';
 
-            document.title = article.title + ' - Amorend';
+            updateArticleMeta({
+                title: article.title + ' - Amorend',
+                description: article.excerpt || 'Amorend 的研究手记。',
+                url: 'https://amorend.top/article.html?post=' + encodeURIComponent(post.id)
+            });
             articleRoot.innerHTML = `
                 <section class="article-hero">
                     <div class="article-meta">
