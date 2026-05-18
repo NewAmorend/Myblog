@@ -518,6 +518,68 @@
             background: rgba(215, 91, 63, 0.1);
         }
 
+        .chapter-posts {
+            grid-column: 1 / -1;
+            margin-top: clamp(1.5rem, 4vw, 2.5rem);
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1rem;
+        }
+
+        .chapter-post {
+            display: grid;
+            align-content: space-between;
+            gap: 0.85rem;
+            min-height: 170px;
+            padding: 1.1rem 1.2rem;
+            border: 1px solid var(--line);
+            border-radius: 10px;
+            color: inherit;
+            text-decoration: none;
+            transition: border-color 0.25s ease, background 0.25s ease, transform 0.25s ease;
+        }
+
+        .chapter-post:hover {
+            transform: translateY(-3px);
+            border-color: var(--accent);
+            background: rgba(215, 91, 63, 0.08);
+        }
+
+        .chapter-post-meta {
+            display: flex;
+            gap: 0.75rem;
+            color: var(--paper-muted);
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .chapter-post-title {
+            font-size: 1.05rem;
+            line-height: 1.4;
+            font-weight: 600;
+        }
+
+        .chapter-post-excerpt {
+            color: var(--paper-muted);
+            font-size: 0.85rem;
+            line-height: 1.55;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .chapter-posts-empty {
+            grid-column: 1 / -1;
+            padding: 1rem 0;
+            color: var(--paper-muted);
+            font-family: var(--font-mono);
+            font-size: 0.78rem;
+        }
+
         .loading-message {
             grid-column: 1 / -1;
             min-height: 280px;
@@ -719,8 +781,7 @@
                 title: '研究手记',
                 date: 'AI / CV / LLM',
                 excerpt: '记录我在 AI Agent、计算机视觉、大语言模型和医学影像方向里的问题意识、实验路径和阶段性判断。',
-                actionText: 'Read Article',
-                actionHref: 'article.html?post=ai-agent-paradigms'
+                hasArticles: true
             },
             {
                 id: 'photo-roll',
@@ -873,11 +934,14 @@
             const safeExcerpt = escapeHTML(section.excerpt);
             const safeKicker = escapeHTML(section.kicker);
             const safeDate = escapeHTML(section.date);
-            const safeHref = escapeHTML(section.actionHref);
-            const safeAction = escapeHTML(section.actionText);
-            const action = section.actionType === 'music'
-                ? `<button class="open-post" type="button" data-play-music>${safeAction}</button>`
-                : `<a class="open-post" href="${safeHref}">${safeAction}</a>`;
+            let action = '';
+            if (section.hasArticles) {
+                action = `<div class="chapter-posts" data-articles="${escapeHTML(section.id)}"><p class="chapter-posts-empty">文章加载中...</p></div>`;
+            } else if (section.actionType === 'music') {
+                action = `<button class="open-post" type="button" data-play-music>${escapeHTML(section.actionText)}</button>`;
+            } else if (section.actionHref) {
+                action = `<a class="open-post" href="${escapeHTML(section.actionHref)}">${escapeHTML(section.actionText)}</a>`;
+            }
             return `
                 <article class="chapter" id="chapter-${section.id}">
                     <div class="chapter-sticky">
@@ -898,6 +962,46 @@
             `;
         }
 
+        function createPostCard(post) {
+            const slug = encodeURIComponent(post.id);
+            return `
+                <a class="chapter-post" href="article.html?post=${slug}">
+                    <div class="chapter-post-meta">
+                        <time datetime="${escapeHTML(post.date)}">${escapeHTML(post.date)}</time>
+                        <span>#${escapeHTML(post.tag)}</span>
+                    </div>
+                    <div class="chapter-post-title">${escapeHTML(post.title)}</div>
+                    <div class="chapter-post-excerpt">${escapeHTML(post.excerpt || '')}</div>
+                </a>
+            `;
+        }
+
+        async function hydrateArticles() {
+            const containers = document.querySelectorAll('[data-articles]');
+            if (!containers.length) return;
+            try {
+                const response = await fetch('blog/index.json');
+                if (!response.ok) throw new Error('HTTP ' + response.status);
+                const posts = await response.json();
+                const sorted = [...posts].sort((a, b) => new Date(b.date) - new Date(a.date));
+                if (!sorted.length) {
+                    containers.forEach((c) => {
+                        c.innerHTML = '<p class="chapter-posts-empty">暂无文章。</p>';
+                    });
+                    return;
+                }
+                const html = sorted.map(createPostCard).join('');
+                containers.forEach((c) => {
+                    c.innerHTML = html;
+                });
+            } catch (err) {
+                console.error('文章列表加载失败：', err);
+                containers.forEach((c) => {
+                    c.innerHTML = '<p class="chapter-posts-empty">文章列表加载失败。</p>';
+                });
+            }
+        }
+
         function renderChannels() {
             elements.chapters.innerHTML = featureSections.map(createChapter).join('');
 
@@ -909,6 +1013,9 @@
             bindPostEvents();
             initAnimations();
             updateProgress();
+            hydrateArticles().then(() => {
+                if (hasGSAP) ScrollTrigger.refresh();
+            });
         }
 
         function bindPostEvents() {
