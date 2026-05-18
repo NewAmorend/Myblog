@@ -4,35 +4,19 @@
 
 ## 📁 文件结构
 
+详细版见 [WRITING.md](WRITING.md#文件结构速查)。
+
 ```
-Myblog/
-├── index.html          # 主页（包含 Hero, About, 作品预览4条, 博客预览4条, Contact）
-├── work.html           # 作品页面（展示所有作品项目）
-├── blog.html           # 博客列表页（展示所有博客文章，带模态框）
-│
-├── posts/              # 文章内容目录
-│   ├── blog/          # 博客文章 markdown 文件
-│   │   ├── ai-agent-future.md
-│   │   ├── medical-cv.md
-│   │   ├── llm-finetuning.md
-│   │   ├── ai-infra.md
-│   │   ├── vqa-research.md
-│   │   └── pathology-vlp.md
-│   │
-│   └── work/          # 作品详情 markdown 文件
-│       ├── ai-agent-platform.md
-│       ├── medical-imaging-system.md
-│       ├── portfolio.md
-│       ├── saas-platform.md
-│       ├── knowledge-graph.md
-│       ├── llm-framework.md
-│       ├── video-processing.md
-│       └── recommendation-engine.md
-│
-├── Music/             # 音乐文件
-│   └── 在雨后醒来.mp3
-│
-└── README.md          # 本文件
+.
+├── index.html          # 入口（meta-refresh 跳 blog.html）
+├── blog.html           # 博客主页：5 频道 + 研究手记下的全文章列表
+├── article.html        # 文章详情页（?post=<id>）
+├── work.html           # 作品集（modal 展开详情）
+├── blog/               # 博客文章 (*.md) + index.json
+├── work/               # 作品详情 (*.md) + index.json
+├── Music/              # 背景音乐
+├── scripts/            # 自动化脚本（sitemap 生成）
+└── .github/workflows/  # GitHub Actions
 ```
 
 ## ✨ 特性
@@ -51,74 +35,42 @@ Myblog/
 
 ## 🎯 核心功能
 
-### 1. 主页 (index.html)
-- Hero 区域：大标题展示
-- About：个人介绍和荣誉
-- Work Preview：最新 4 个作品
-- Blog Preview：最新 4 篇博客
-- Contact：联系方式
+### 1. 入口 (index.html)
+- meta-refresh 立即跳转到 blog.html
 
-### 2. 作品页面 (work.html)
-- 展示所有 8 个作品项目
-- 网格布局，响应式设计
-- 滚动触发动画
+### 2. 博客主页 (blog.html)
+- 5 个内容频道：研究手记、摄影集、正在听、社交、灵感档案
+- "研究手记" 频道下嵌入完整文章列表，支持 tag 单选筛选 + 关键词搜索
+- 文章数据来自 `blog/index.json`，加新文章自动出现
 
-### 3. 博客页面 (blog.html)
-- 展示所有 6 篇博客文章
-- **模态框功能**：点击文章在页面内弹出液态玻璃风格窗口
-- 支持 ESC 键关闭、点击背景关闭
-- 平滑的打开/关闭动画
+### 3. 文章详情 (article.html)
+- 通过 `?post=<id>` 加载对应 markdown
+- title / description / canonical / og:* 由 JS 动态注入，对爬虫和分享卡片友好
+- 上下篇导航
 
-### 4. 音乐播放
+### 4. 作品页面 (work.html)
+- 8+ 个作品项目网格
+- 点击作品在 modal 中展开详情（modal 仅 work 页保留，blog 已改为独立页面）
+
+### 5. 音乐播放
 - 右下角浮动按钮控制
-- 自动播放（需用户交互）
+- 自动播放（需用户交互，浏览器策略）
 - 播放状态脉冲动效
 
-### 5. 主题切换
-- 支持明/暗主题
-- 自动检测系统偏好
-- 平滑过渡效果
-
-## 🎨 模态框设计
-
-博客页面采用页面内模态框设计：
-
-**特点**：
-- 液态玻璃背景（backdrop-filter: blur(40px)）
-- 平滑的打开/关闭动画
-- 支持长内容滚动
-- 响应式设计
-
-**交互方式**：
-- 点击文章标题或"阅读全文"打开
-- 点击 × 按钮关闭
-- 点击背景关闭
-- 按 ESC 键关闭
+### 6. 主题切换
+- 支持明/暗主题，自动检测系统偏好
+- 四个页面共用同一套 CSS token，体验一致
+- 目前不跨页面持久化（每次切换基于 OS 偏好）
 
 ## 📝 添加新文章
 
-### 添加博客文章
+日常写作和发布流程见 [WRITING.md](WRITING.md)。简版：
 
-1. 在 `posts/blog/` 创建新的 markdown 文件
-2. 在 `blog.html` 的 `blogPosts` 对象中添加内容：
-```javascript
-'your-post-slug': {
-    title: '文章标题',
-    date: '2026-01-20',
-    tag: '#YourTag',
-    content: `<p>文章 HTML 内容...</p>`
-}
-```
-3. 在页面中添加对应的博客卡片：
-```html
-<article class="blog-card" data-post="your-post-slug">
-    <!-- 卡片内容 -->
-</article>
-```
+1. 在 `blog/` 下新建 markdown 文件（带 frontmatter）
+2. 在 `blog/index.json` 加一条元数据
+3. `git push` 到 main
 
-### 添加作品项目
-
-类似流程，在 `posts/work/` 创建 markdown 文件，并在 `work.html` 中添加项目卡片。
+sitemap、tag 筛选、搜索、SEO meta 都会自动跟上，不需要改其它文件。
 
 ## 🚀 部署建议
 
