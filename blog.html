@@ -518,9 +518,78 @@
             background: rgba(215, 91, 63, 0.1);
         }
 
-        .chapter-posts {
+        .chapter-filters {
             grid-column: 1 / -1;
             margin-top: clamp(1.5rem, 4vw, 2.5rem);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem 1rem;
+            align-items: center;
+        }
+
+        .chapter-search {
+            flex: 1 1 240px;
+            max-width: 360px;
+            background: transparent;
+            border: 1px solid var(--line);
+            border-radius: 999px;
+            padding: 0.55rem 1rem;
+            color: var(--paper);
+            font-family: var(--font-mono);
+            font-size: 0.82rem;
+            outline: none;
+            transition: border-color 0.2s ease;
+        }
+
+        .chapter-search:focus {
+            border-color: var(--accent);
+        }
+
+        .chapter-search::placeholder {
+            color: var(--paper-muted);
+        }
+
+        .chapter-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.4rem;
+        }
+
+        .chapter-tag {
+            border: 1px solid var(--line);
+            background: transparent;
+            color: var(--paper-muted);
+            padding: 0.35rem 0.75rem;
+            border-radius: 999px;
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            cursor: pointer;
+            transition: border-color 0.2s ease, color 0.2s ease, background 0.2s ease;
+        }
+
+        .chapter-tag:hover {
+            border-color: var(--accent);
+            color: var(--paper);
+        }
+
+        .chapter-tag[aria-pressed="true"] {
+            border-color: var(--accent);
+            background: rgba(215, 91, 63, 0.16);
+            color: var(--paper);
+        }
+
+        .chapter-result-count {
+            color: var(--paper-muted);
+            font-family: var(--font-mono);
+            font-size: 0.72rem;
+            margin-left: auto;
+        }
+
+        .chapter-posts {
+            grid-column: 1 / -1;
+            margin-top: clamp(1rem, 2.5vw, 1.5rem);
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
             gap: 1rem;
@@ -936,7 +1005,14 @@
             const safeDate = escapeHTML(section.date);
             let action = '';
             if (section.hasArticles) {
-                action = `<div class="chapter-posts" data-articles="${escapeHTML(section.id)}"><p class="chapter-posts-empty">文章加载中...</p></div>`;
+                action = `
+                    <div class="chapter-filters" data-filters="${escapeHTML(section.id)}" hidden>
+                        <input type="search" class="chapter-search" placeholder="搜索标题、tag、摘要…" aria-label="搜索文章" data-search>
+                        <div class="chapter-tags" role="group" aria-label="按 tag 筛选" data-tags></div>
+                        <span class="chapter-result-count" data-result-count aria-live="polite"></span>
+                    </div>
+                    <div class="chapter-posts" data-articles="${escapeHTML(section.id)}"><p class="chapter-posts-empty">文章加载中...</p></div>
+                `;
             } else if (section.actionType === 'music') {
                 action = `<button class="open-post" type="button" data-play-music>${escapeHTML(section.actionText)}</button>`;
             } else if (section.actionHref) {
@@ -976,6 +1052,66 @@
             `;
         }
 
+        function matchesQuery(post, query) {
+            if (!query) return true;
+            const haystack = `${post.title} ${post.tag} ${post.excerpt || ''}`.toLowerCase();
+            return haystack.includes(query.toLowerCase());
+        }
+
+        function renderPosts(container, posts, countEl) {
+            if (!posts.length) {
+                container.innerHTML = '<p class="chapter-posts-empty">没有匹配的文章。</p>';
+            } else {
+                container.innerHTML = posts.map(createPostCard).join('');
+            }
+            if (countEl) {
+                countEl.textContent = `${posts.length} / ${container.dataset.total} 篇`;
+            }
+        }
+
+        function setupFilters(filtersEl, container, posts) {
+            const searchInput = filtersEl.querySelector('[data-search]');
+            const tagsEl = filtersEl.querySelector('[data-tags]');
+            const countEl = filtersEl.querySelector('[data-result-count]');
+            const tags = Array.from(new Set(posts.map((p) => p.tag).filter(Boolean))).sort();
+            const state = { query: '', tag: null };
+
+            container.dataset.total = String(posts.length);
+
+            tagsEl.innerHTML = tags
+                .map(
+                    (tag) =>
+                        `<button class="chapter-tag" type="button" data-tag="${escapeHTML(tag)}" aria-pressed="false">#${escapeHTML(tag)}</button>`
+                )
+                .join('');
+
+            const apply = () => {
+                const filtered = posts.filter(
+                    (p) => matchesQuery(p, state.query) && (!state.tag || p.tag === state.tag)
+                );
+                renderPosts(container, filtered, countEl);
+            };
+
+            searchInput.addEventListener('input', (e) => {
+                state.query = e.target.value.trim();
+                apply();
+            });
+
+            tagsEl.addEventListener('click', (e) => {
+                const btn = e.target.closest('[data-tag]');
+                if (!btn) return;
+                const tag = btn.dataset.tag;
+                state.tag = state.tag === tag ? null : tag;
+                tagsEl.querySelectorAll('.chapter-tag').forEach((el) => {
+                    el.setAttribute('aria-pressed', el.dataset.tag === state.tag ? 'true' : 'false');
+                });
+                apply();
+            });
+
+            filtersEl.hidden = false;
+            apply();
+        }
+
         async function hydrateArticles() {
             const containers = document.querySelectorAll('[data-articles]');
             if (!containers.length) return;
@@ -990,9 +1126,14 @@
                     });
                     return;
                 }
-                const html = sorted.map(createPostCard).join('');
                 containers.forEach((c) => {
-                    c.innerHTML = html;
+                    const id = c.dataset.articles;
+                    const filtersEl = document.querySelector(`[data-filters="${id}"]`);
+                    if (filtersEl) {
+                        setupFilters(filtersEl, c, sorted);
+                    } else {
+                        c.innerHTML = sorted.map(createPostCard).join('');
+                    }
                 });
             } catch (err) {
                 console.error('文章列表加载失败：', err);
