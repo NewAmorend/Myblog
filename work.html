@@ -10,26 +10,33 @@
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <style>
         :root {
-            /* Light Theme */
-            --bg-color: #F5F5DC;
-            --text-color: #1a1a2e;
-            --accent-color: #0047AB;
-            --secondary-accent: #1E90FF;
-            --white-accent: #FFFFFF;
-            --nav-bg: rgba(245, 245, 220, 0.85);
-            --nav-border: rgba(26, 26, 46, 0.1);
-            --font-sans: 'Helvetica Neue', Arial, sans-serif;
-            --font-mono: 'SF Mono', Monaco, 'Cascadia Code', monospace;
+            --bg: #11110f;
+            --bg-soft: #1a1916;
+            --paper: #efeadf;
+            --paper-muted: rgba(239, 234, 223, 0.68);
+            --ink: #10100f;
+            --line: rgba(239, 234, 223, 0.2);
+            --line-strong: rgba(239, 234, 223, 0.48);
+            --accent: #d75b3f;
+            --accent-2: #b8a45d;
+            --accent-3: #75876a;
+            --nav-bg: rgba(17, 17, 15, 0.78);
+            --font-sans: "Helvetica Neue", Arial, "PingFang SC", "Microsoft YaHei", sans-serif;
+            --font-mono: "SF Mono", Monaco, "Cascadia Code", monospace;
         }
 
-        [data-theme="dark"] {
-            --bg-color: #0a0e27;
-            --text-color: #F0F0F0;
-            --accent-color: #1E90FF;
-            --secondary-accent: #87CEEB;
-            --white-accent: #FFFFFF;
-            --nav-bg: rgba(10, 14, 39, 0.85);
-            --nav-border: rgba(240, 240, 240, 0.1);
+        [data-theme="light"] {
+            --bg: #eee8dc;
+            --bg-soft: #ded5c6;
+            --paper: #151512;
+            --paper-muted: rgba(21, 21, 18, 0.64);
+            --ink: #eee8dc;
+            --line: rgba(21, 21, 18, 0.18);
+            --line-strong: rgba(21, 21, 18, 0.42);
+            --accent: #a93425;
+            --accent-2: #7c642d;
+            --accent-3: #526b50;
+            --nav-bg: rgba(238, 232, 220, 0.78);
         }
 
         * {
@@ -44,8 +51,8 @@
 
         body {
             font-family: var(--font-sans);
-            background-color: var(--bg-color);
-            color: var(--text-color);
+            background-color: var(--bg);
+            color: var(--paper);
             transition: background-color 0.3s ease, color 0.3s ease;
             overflow-x: hidden;
             line-height: 1.6;
@@ -77,17 +84,11 @@
             background: var(--nav-bg);
             backdrop-filter: blur(20px) saturate(180%);
             -webkit-backdrop-filter: blur(20px) saturate(180%);
-            border: 1px solid rgba(255, 255, 255, 0.3);
+            border: 1px solid var(--line);
             border-radius: 20px;
             z-index: 1000;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-            transition: background-color 0.3s ease, border-color 0.3s ease;
-        }
-
-        [data-theme="dark"] header {
-            background: rgba(10, 14, 39, 0.85);
-            border-color: rgba(255, 255, 255, 0.1);
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            transition: background-color 0.3s ease, border-color 0.3s ease;
         }
 
         .logo {
@@ -95,7 +96,7 @@
             font-weight: 800;
             text-transform: uppercase;
             letter-spacing: 0.1em;
-            background: linear-gradient(135deg, var(--accent-color), var(--secondary-accent));
+            background: linear-gradient(135deg, var(--accent), var(--accent-2));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
@@ -109,7 +110,7 @@
         .nav-links a {
             margin-left: 2rem;
             position: relative;
-            color: var(--text-color);
+            color: var(--paper);
             text-decoration: none;
             font-weight: 500;
             transition: color 0.3s ease;
@@ -122,7 +123,7 @@
             height: 2px;
             bottom: -4px;
             left: 0;
-            background-color: var(--accent-color);
+            background-color: var(--accent);
             transition: width 0.3s;
         }
 
@@ -131,12 +132,12 @@
         }
 
         .nav-links a:hover {
-            color: var(--accent-color);
+            color: var(--accent);
         }
 
         #theme-toggle {
             cursor: pointer;
-            border: 1px solid rgba(255, 255, 255, 0.3);
+            border: 1px solid var(--line);
             padding: 0.4rem 0.8rem;
             border-radius: 10px;
             background: rgba(255, 255, 255, 0.15);
@@ -146,8 +147,8 @@
         }
 
         #theme-toggle:hover {
-            background: linear-gradient(135deg, var(--accent-color), var(--secondary-accent));
-            color: var(--white-accent);
+            background: linear-gradient(135deg, var(--accent), var(--accent-2));
+            color: #fff;
         }
 
         /* --- Section Divider --- */
@@ -155,7 +156,7 @@
             height: 1px;
             background: linear-gradient(90deg,
                 transparent 0%,
-                var(--accent-color) 50%,
+                var(--accent) 50%,
                 transparent 100%
             );
             opacity: 0.3;
@@ -175,22 +176,7 @@
             font-weight: 800;
             line-height: 1.1;
             margin-bottom: 1rem;
-            background: linear-gradient(135deg,
-                #001a33 0%,
-                #0047AB 50%,
-                #87CEEB 100%
-            );
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        [data-theme="dark"] .page-title {
-            background: linear-gradient(135deg,
-                #F0F0F0 0%,
-                #1E90FF 50%,
-                #87CEEB 100%
-            );
+            background: linear-gradient(135deg, var(--accent), var(--accent-2));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
@@ -228,14 +214,14 @@
 
         .work-card:hover {
             transform: translateY(-8px) scale(1.02);
-            box-shadow: 0 12px 40px rgba(0, 71, 171, 0.25);
-            border-color: var(--accent-color);
+            box-shadow: 0 12px 40px rgba(215, 91, 63, 0.25);
+            border-color: var(--accent);
         }
 
         .work-code {
             font-family: var(--font-mono);
             font-size: 0.85rem;
-            color: var(--accent-color);
+            color: var(--accent);
             margin-bottom: 0.5rem;
             font-weight: 600;
         }
@@ -261,8 +247,8 @@
         }
 
         .work-tag {
-            background: rgba(0, 71, 171, 0.1);
-            color: var(--accent-color);
+            background: rgba(215, 91, 63, 0.1);
+            color: var(--accent);
             padding: 0.3rem 0.8rem;
             border-radius: 15px;
             font-size: 0.75rem;
@@ -296,10 +282,10 @@
         }
 
         .modal-content {
-            background: rgba(255, 255, 255, 0.25);
+            background: rgba(17, 17, 15, 0.85);
             backdrop-filter: blur(40px) saturate(200%);
             -webkit-backdrop-filter: blur(40px) saturate(200%);
-            border: 1px solid rgba(255, 255, 255, 0.5);
+            border: 1px solid var(--line);
             border-radius: 24px;
             padding: 3rem;
             max-width: 900px;
@@ -313,11 +299,8 @@
             opacity: 0;
             transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             box-shadow:
-                0 -1px 0 rgba(255, 255, 255, 0.8),
-                inset 0 2px 4px rgba(255, 255, 255, 0.6),
-                inset 0 -2px 4px rgba(0, 0, 0, 0.05),
-                0 20px 60px rgba(0, 0, 0, 0.3),
-                0 30px 100px rgba(0, 0, 0, 0.2);
+                0 20px 60px rgba(0, 0, 0, 0.4),
+                0 30px 100px rgba(0, 0, 0, 0.25);
             /* 隐藏滚动条但保持滚动功能 */
             scrollbar-width: none;
             -ms-overflow-style: none;
@@ -330,9 +313,15 @@
             display: none;
         }
 
-        [data-theme="dark"] .modal-content {
-            background: rgba(10, 14, 39, 0.85);
-            border-color: rgba(255, 255, 255, 0.15);
+        [data-theme="light"] .modal-content {
+            background: rgba(255, 255, 255, 0.25);
+            border-color: rgba(255, 255, 255, 0.5);
+            box-shadow:
+                0 -1px 0 rgba(255, 255, 255, 0.8),
+                inset 0 2px 4px rgba(255, 255, 255, 0.6),
+                inset 0 -2px 4px rgba(0, 0, 0, 0.05),
+                0 20px 60px rgba(0, 0, 0, 0.3),
+                0 30px 100px rgba(0, 0, 0, 0.2);
         }
 
         .modal-overlay.active .modal-content {
@@ -390,7 +379,7 @@
 
         .modal-code {
             font-family: var(--font-mono);
-            color: var(--accent-color);
+            color: var(--accent);
             font-size: 0.9rem;
             margin-bottom: 2rem;
             display: block;
@@ -404,7 +393,7 @@
             font-size: 1.3rem;
             margin-top: 2rem;
             margin-bottom: 1rem;
-            color: var(--accent-color);
+            color: var(--accent);
         }
 
         .modal-body p {
@@ -421,7 +410,7 @@
         }
 
         .modal-body code {
-            background: rgba(0, 71, 171, 0.1);
+            background: rgba(215, 91, 63, 0.1);
             padding: 0.2rem 0.4rem;
             border-radius: 4px;
             font-family: var(--font-mono);
@@ -435,7 +424,7 @@
             right: 2rem;
             width: 56px;
             height: 56px;
-            border: 1px solid rgba(255, 255, 255, 0.3);
+            border: 1px solid var(--line);
             border-radius: 50%;
             background: rgba(255, 255, 255, 0.2);
             backdrop-filter: blur(20px) saturate(180%);
@@ -446,20 +435,20 @@
             justify-content: center;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             box-shadow:
-                0 8px 32px rgba(0, 71, 171, 0.2),
-                0 4px 16px rgba(0, 71, 171, 0.1);
+                0 8px 32px rgba(215, 91, 63, 0.2),
+                0 4px 16px rgba(215, 91, 63, 0.1);
             z-index: 1000;
         }
 
         .music-toggle:hover {
-            background: linear-gradient(135deg, var(--accent-color), var(--secondary-accent));
+            background: linear-gradient(135deg, var(--accent), var(--accent-2));
             transform: scale(1.1) translateY(-4px);
         }
 
         .music-toggle svg {
             width: 24px;
             height: 24px;
-            fill: var(--text-color);
+            fill: var(--paper);
         }
 
         .music-toggle.playing {
@@ -469,13 +458,13 @@
         @keyframes pulse {
             0%, 100% {
                 box-shadow:
-                    0 8px 32px rgba(0, 71, 171, 0.2),
-                    0 4px 16px rgba(0, 71, 171, 0.1);
+                    0 8px 32px rgba(215, 91, 63, 0.2),
+                    0 4px 16px rgba(215, 91, 63, 0.1);
             }
             50% {
                 box-shadow:
-                    0 12px 48px rgba(0, 71, 171, 0.35),
-                    0 6px 24px rgba(0, 71, 171, 0.2);
+                    0 12px 48px rgba(215, 91, 63, 0.35),
+                    0 6px 24px rgba(215, 91, 63, 0.2);
             }
         }
 
@@ -841,17 +830,21 @@
         const toggleBtn = document.getElementById('theme-toggle');
         const root = document.documentElement;
 
-        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-            root.setAttribute('data-theme', 'dark');
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) {
+            root.setAttribute('data-theme', 'light');
         }
 
+        function syncThemeToggleLabel() {
+            const isLight = root.getAttribute('data-theme') === 'light';
+            toggleBtn.setAttribute('aria-label', isLight ? '切换到深色模式' : '切换到亮色模式');
+            toggleBtn.setAttribute('title', isLight ? '切换到深色模式' : '切换到亮色模式');
+        }
+
+        syncThemeToggleLabel();
+
         toggleBtn.addEventListener('click', () => {
-            const currentTheme = root.getAttribute('data-theme');
-            if (currentTheme === 'dark') {
-                root.setAttribute('data-theme', 'light');
-            } else {
-                root.setAttribute('data-theme', 'dark');
-            }
+            root.setAttribute('data-theme', root.getAttribute('data-theme') === 'light' ? 'dark' : 'light');
+            syncThemeToggleLabel();
         });
 
         // === 音乐控制 ===
@@ -936,7 +929,7 @@
 
                 const time = Date.now();
                 const baseColor = getComputedStyle(document.body)
-                    .getPropertyValue('--accent-color').trim();
+                    .getPropertyValue('--accent').trim();
 
                 lines.forEach((line, i) => {
                     ctx.beginPath();
