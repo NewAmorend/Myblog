@@ -6,6 +6,8 @@
 
 ## 加一篇博客文章
 
+> 站点支持中英双语。UI 文案两套都齐了；文章正文默认中文，如果想给某篇加英文版本，见 [双语文章](#双语文章) 一节。
+
 三步：
 
 ### 1. 在 `blog/` 下新建 markdown 文件
@@ -117,6 +119,54 @@ description: 一句话介绍。
 `work.html` 加载时 fetch `work/index.json`，自动渲染卡片，点击在 modal 中展示详情。
 
 > 作品目前仍走 modal，没有独立 URL；如果将来想给作品也加专门页面（类似 `article.html?post=`），需要另做一次架构调整。
+
+---
+
+## 双语文章
+
+站点 UI 默认中英双语（顶部"EN / 中"按钮切换，URL 参数 `?lang=en` 同样生效）。文章正文默认中文；某篇文章如果你想加英文版，做两件事：
+
+### 1. 在 `blog/` 下放英文 markdown
+
+约定命名 `<slug>.en.md`（紧挨着中文 `<slug>.md`）。frontmatter 同样需要：
+
+```markdown
+---
+title: My English Title
+date: 2026-04-04
+tag: AI-Agent
+---
+
+English body...
+```
+
+### 2. 在 `blog/index.json` 的对应条目加 `i18n` 字段
+
+```json
+{
+  "id": "ai-agent-paradigms",
+  "file": "ai-agent-paradigms.md",
+  "title": "几个 Agent 常见范式的思考",
+  "date": "2026-04-04",
+  "tag": "AI-Agent",
+  "excerpt": "...",
+  "i18n": {
+    "en": {
+      "title": "Notes on Agent paradigms",
+      "excerpt": "ReAct, Reflection, Plan-Solve — three angles...",
+      "file": "ai-agent-paradigms.en.md"
+    }
+  }
+}
+```
+
+### 行为说明
+
+- 切到 EN 后，博客列表用 `i18n.en.title` 和 `i18n.en.excerpt`；点开后 article.html 加载 `i18n.en.file`
+- 没加 `i18n.en` 的文章，EN 模式下继续显示中文标题，点开后 article.html 加载中文原文并显示提示 *"This post has no English version yet — showing the Chinese original below."*
+- 不要在 `blog/index.json` 直接重复列条目，i18n 是同一篇文章的"另一种语言版本"，靠 `i18n` 嵌套字段标记
+
+作品 (`work/index.json`) 同样支持 `i18n.en: { title, description, file }` 字段，行为相同（点击作品在 modal 中展示，按需切换语言）。
 
 ---
 

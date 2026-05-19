@@ -9,6 +9,9 @@
     <meta name="author" content="Amorend">
     <meta name="theme-color" content="#11110f">
     <link rel="canonical" href="https://amorend.top/blog.html">
+    <link rel="alternate" hreflang="zh-CN" href="https://amorend.top/blog.html">
+    <link rel="alternate" hreflang="en" href="https://amorend.top/blog.html?lang=en">
+    <link rel="alternate" hreflang="x-default" href="https://amorend.top/blog.html">
     <meta property="og:type" content="website">
     <meta property="og:site_name" content="Amorend">
     <meta property="og:locale" content="zh_CN">
@@ -18,6 +21,7 @@
     <meta name="twitter:card" content="summary">
     <meta name="twitter:title" content="博客 - Amorend">
     <meta name="twitter:description" content="AI Agent、LLM、医学影像、计算机视觉方向的研究手记。">
+    <script src="i18n.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -169,7 +173,8 @@
             transform-origin: left;
         }
 
-        .theme-toggle {
+        .theme-toggle,
+        .lang-toggle {
             position: relative;
             display: grid;
             place-items: center;
@@ -184,11 +189,19 @@
             transition: border-color 0.25s ease, color 0.25s ease, opacity 0.25s ease, transform 0.25s ease;
         }
 
-        .theme-toggle:hover {
+        .theme-toggle:hover,
+        .lang-toggle:hover {
             border-color: var(--accent);
             color: var(--accent);
             opacity: 1;
             transform: translateY(-2px);
+        }
+
+        .lang-toggle {
+            font-family: var(--font-mono);
+            font-size: 0.72rem;
+            font-weight: 600;
+            letter-spacing: 0.04em;
         }
 
         .theme-toggle svg {
@@ -771,12 +784,13 @@
     <header>
         <a class="logo" href="#page-title">Amorend</a>
         <nav class="nav-links" aria-label="主导航">
-            <a href="#chapter-research-log">研究</a>
-            <a href="#chapter-photo-roll">摄影</a>
-            <a href="#chapter-music-rotation">音乐</a>
-            <a href="#chapter-social-links">社交</a>
-            <a href="#chapter-inspiration-archive">灵感</a>
+            <a href="#chapter-research-log" data-i18n="nav.channel.research">研究</a>
+            <a href="#chapter-photo-roll" data-i18n="nav.channel.photo">摄影</a>
+            <a href="#chapter-music-rotation" data-i18n="nav.channel.music">音乐</a>
+            <a href="#chapter-social-links" data-i18n="nav.channel.social">社交</a>
+            <a href="#chapter-inspiration-archive" data-i18n="nav.channel.archive">灵感</a>
         </nav>
+        <button class="lang-toggle" id="lang-toggle" type="button" title="Switch language">EN</button>
         <button class="theme-toggle" id="theme-toggle" type="button" aria-label="切换到亮色模式" title="切换明暗模式">
             <svg class="moon-icon" viewBox="0 0 24 24" aria-hidden="true">
                 <path d="M21 14.6A8.5 8.5 0 0 1 9.4 3a7 7 0 1 0 11.6 11.6Z"/>
@@ -796,7 +810,7 @@
         <span id="progress-text">0%</span>
     </div>
 
-    <button id="music-toggle" class="music-toggle" type="button" title="播放/暂停音乐" aria-label="播放或暂停音乐">
+    <button id="music-toggle" class="music-toggle" type="button" title="播放/暂停音乐" aria-label="播放或暂停音乐" data-i18n-attr="title:music.toggle.title; aria-label:music.toggle.title">
         <svg class="music-icon" viewBox="0 0 24 24" aria-hidden="true">
             <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>
         </svg>
@@ -811,25 +825,21 @@
     <main>
         <section class="hero" aria-labelledby="page-title">
             <div class="hero-inner">
-                <p class="eyebrow">v_2026 / Research Notes / Built by Amorend</p>
-                <h1 class="hero-title" id="page-title" data-split>Blog</h1>
+                <p class="eyebrow" data-i18n="blog.eyebrow">v_2026 / Research Notes / Built by Amorend</p>
+                <h1 class="hero-title" id="page-title" data-split data-i18n="blog.title">Blog</h1>
                 <div class="hero-grid">
-                    <p class="hero-lead">
-                        把 <strong>AI、工程实践、研究笔记</strong> 调成一根可被滚动拨动的弦。
-                    </p>
-                    <p class="hero-note">
-                        每个版块是一段信号：文章、影像、音乐、社交和灵感，会在这里汇合。
-                    </p>
+                    <p class="hero-lead" data-i18n="blog.lead">把 AI、工程实践、研究笔记 调成一根可被滚动拨动的弦。</p>
+                    <p class="hero-note" data-i18n="blog.note">每个版块是一段信号：文章、影像、音乐、社交和灵感，会在这里汇合。</p>
                 </div>
             </div>
             <div class="hero-footer">
-                <p class="micro-copy">Concentrate / Keep Scrolling / Let the notes unfold</p>
-                <div class="scroll-cue"><span></span>Scroll</div>
+                <p class="micro-copy" data-i18n="blog.microCopy">Concentrate / Keep Scrolling / Let the notes unfold</p>
+                <div class="scroll-cue"><span></span><span data-i18n="blog.scrollCue">Scroll</span></div>
             </div>
         </section>
 
         <section class="chapters" id="featured-chapters" aria-label="内容频道">
-            <div class="loading-message">内容频道加载中...</div>
+            <div class="loading-message" data-i18n="blog.loading">内容频道加载中...</div>
         </section>
 
     </main>
@@ -845,51 +855,53 @@
         const root = document.documentElement;
         const hasGSAP = window.gsap && window.ScrollTrigger;
         const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        const i18n = window.__I18N__;
+        const t = i18n ? i18n.t : (k) => k;
         let lenis = null;
         const featureSections = [
             {
                 id: 'research-log',
-                kicker: 'Channel / Research',
-                title: '研究手记',
-                date: 'AI / CV / LLM',
-                excerpt: '记录我在 AI Agent、计算机视觉、大语言模型和医学影像方向里的问题意识、实验路径和阶段性判断。',
+                kickerKey: 'channel.research.kicker',
+                titleKey: 'channel.research.title',
+                dateKey: 'channel.research.date',
+                excerptKey: 'channel.research.excerpt',
                 hasArticles: true
             },
             {
                 id: 'photo-roll',
-                kicker: 'Channel / Photography',
-                title: '摄影集',
-                date: 'Frames / Daily Life',
-                excerpt: '放一些生活里的构图、光线和瞬间。它不一定服务于技术，但会保存我观察世界的方式。',
-                actionText: 'Coming Soon',
+                kickerKey: 'channel.photo.kicker',
+                titleKey: 'channel.photo.title',
+                dateKey: 'channel.photo.date',
+                excerptKey: 'channel.photo.excerpt',
+                actionKey: 'channel.photo.action',
                 actionHref: '#contact'
             },
             {
                 id: 'music-rotation',
-                kicker: 'Channel / Music',
-                title: '正在听',
-                date: 'Loop / 在雨后醒来',
-                excerpt: '音乐是我切换状态的开关。这里会放最近循环、写代码时的歌单，以及一些和情绪有关的片段。',
-                actionText: 'Play Music',
+                kickerKey: 'channel.music.kicker',
+                titleKey: 'channel.music.title',
+                dateKey: 'channel.music.date',
+                excerptKey: 'channel.music.excerpt',
+                actionKey: 'channel.music.action',
                 actionHref: '#music-toggle',
                 actionType: 'music'
             },
             {
                 id: 'social-links',
-                kicker: 'Channel / Social',
-                title: '社交媒体',
-                date: 'Connect / Share',
-                excerpt: '以后这里会汇总我在不同平台的输出：研究动态、项目进展、自媒体观察，以及一些短想法。',
-                actionText: 'Contact Me',
+                kickerKey: 'channel.social.kicker',
+                titleKey: 'channel.social.title',
+                dateKey: 'channel.social.date',
+                excerptKey: 'channel.social.excerpt',
+                actionKey: 'channel.social.action',
                 actionHref: '#contact'
             },
             {
                 id: 'inspiration-archive',
-                kicker: 'Channel / Archive',
-                title: '灵感档案',
-                date: 'Notes / References',
-                excerpt: '把暂时还没有长成文章的想法放在这里：一句话、一个问题、一张图、一次对话，先存档再发酵。',
-                actionText: 'Read Notes',
+                kickerKey: 'channel.archive.kicker',
+                titleKey: 'channel.archive.title',
+                dateKey: 'channel.archive.date',
+                excerptKey: 'channel.archive.excerpt',
+                actionKey: 'channel.archive.action',
                 actionHref: 'article.html?post=data-collection'
             }
         ];
@@ -901,8 +913,19 @@
             chapters: document.getElementById('featured-chapters'),
             musicToggle: document.getElementById('music-toggle'),
             bgMusic: document.getElementById('bg-music'),
-            themeToggle: document.getElementById('theme-toggle')
+            themeToggle: document.getElementById('theme-toggle'),
+            langToggle: document.getElementById('lang-toggle')
         };
+
+        if (i18n) {
+            i18n.applyDataI18n();
+            i18n.bindToggle(elements.langToggle);
+            i18n.onLangChange(() => {
+                i18n.applyDataI18n();
+                renderChannels();
+                syncThemeToggleLabel();
+            });
+        }
 
         if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) {
             root.setAttribute('data-theme', 'light');
@@ -910,8 +933,9 @@
 
         function syncThemeToggleLabel() {
             const isLight = root.getAttribute('data-theme') === 'light';
-            elements.themeToggle.setAttribute('aria-label', isLight ? '切换到深色模式' : '切换到亮色模式');
-            elements.themeToggle.setAttribute('title', isLight ? '切换到深色模式' : '切换到亮色模式');
+            const label = t(isLight ? 'theme.toggle.toDark' : 'theme.toggle.toLight');
+            elements.themeToggle.setAttribute('aria-label', label);
+            elements.themeToggle.setAttribute('title', label);
         }
 
         syncThemeToggleLabel();
@@ -1002,24 +1026,24 @@
         }
 
         function createChapter(section, index) {
-            const safeTitle = escapeHTML(section.title);
-            const safeExcerpt = escapeHTML(section.excerpt);
-            const safeKicker = escapeHTML(section.kicker);
-            const safeDate = escapeHTML(section.date);
+            const safeTitle = escapeHTML(t(section.titleKey));
+            const safeExcerpt = escapeHTML(t(section.excerptKey));
+            const safeKicker = escapeHTML(t(section.kickerKey));
+            const safeDate = escapeHTML(t(section.dateKey));
             let action = '';
             if (section.hasArticles) {
                 action = `
                     <div class="chapter-filters" data-filters="${escapeHTML(section.id)}" hidden>
-                        <input type="search" class="chapter-search" placeholder="搜索标题、tag、摘要…" aria-label="搜索文章" data-search>
-                        <div class="chapter-tags" role="group" aria-label="按 tag 筛选" data-tags></div>
+                        <input type="search" class="chapter-search" placeholder="${escapeHTML(t('filters.search.placeholder'))}" aria-label="${escapeHTML(t('filters.search.aria'))}" data-search>
+                        <div class="chapter-tags" role="group" aria-label="${escapeHTML(t('filters.tags.aria'))}" data-tags></div>
                         <span class="chapter-result-count" data-result-count aria-live="polite"></span>
                     </div>
-                    <div class="chapter-posts" data-articles="${escapeHTML(section.id)}"><p class="chapter-posts-empty">文章加载中...</p></div>
+                    <div class="chapter-posts" data-articles="${escapeHTML(section.id)}"><p class="chapter-posts-empty">${escapeHTML(t('filters.empty.loading'))}</p></div>
                 `;
             } else if (section.actionType === 'music') {
-                action = `<button class="open-post" type="button" data-play-music>${escapeHTML(section.actionText)}</button>`;
+                action = `<button class="open-post" type="button" data-play-music>${escapeHTML(t(section.actionKey))}</button>`;
             } else if (section.actionHref) {
-                action = `<a class="open-post" href="${escapeHTML(section.actionHref)}">${escapeHTML(section.actionText)}</a>`;
+                action = `<a class="open-post" href="${escapeHTML(section.actionHref)}">${escapeHTML(t(section.actionKey))}</a>`;
             }
             return `
                 <article class="chapter" id="chapter-${section.id}">
@@ -1041,16 +1065,30 @@
             `;
         }
 
+        function localizedField(post, field) {
+            const lang = i18n ? i18n.lang : 'zh';
+            if (lang !== 'zh' && post.i18n && post.i18n[lang] && post.i18n[lang][field]) {
+                return post.i18n[lang][field];
+            }
+            return post[field];
+        }
+
+        function articleHref(slug) {
+            const lang = i18n ? i18n.lang : 'zh';
+            return lang === 'zh'
+                ? `article.html?post=${encodeURIComponent(slug)}`
+                : `article.html?post=${encodeURIComponent(slug)}&lang=${lang}`;
+        }
+
         function createPostCard(post) {
-            const slug = encodeURIComponent(post.id);
             return `
-                <a class="chapter-post" href="article.html?post=${slug}">
+                <a class="chapter-post" href="${articleHref(post.id)}">
                     <div class="chapter-post-meta">
                         <time datetime="${escapeHTML(post.date)}">${escapeHTML(post.date)}</time>
                         <span>#${escapeHTML(post.tag)}</span>
                     </div>
-                    <div class="chapter-post-title">${escapeHTML(post.title)}</div>
-                    <div class="chapter-post-excerpt">${escapeHTML(post.excerpt || '')}</div>
+                    <div class="chapter-post-title">${escapeHTML(localizedField(post, 'title'))}</div>
+                    <div class="chapter-post-excerpt">${escapeHTML(localizedField(post, 'excerpt') || '')}</div>
                 </a>
             `;
         }
@@ -1063,12 +1101,12 @@
 
         function renderPosts(container, posts, countEl) {
             if (!posts.length) {
-                container.innerHTML = '<p class="chapter-posts-empty">没有匹配的文章。</p>';
+                container.innerHTML = `<p class="chapter-posts-empty">${escapeHTML(t('filters.empty.noMatch'))}</p>`;
             } else {
                 container.innerHTML = posts.map(createPostCard).join('');
             }
             if (countEl) {
-                countEl.textContent = `${posts.length} / ${container.dataset.total} 篇`;
+                countEl.textContent = t('filters.count', { n: posts.length, m: container.dataset.total });
             }
         }
 
@@ -1125,7 +1163,7 @@
                 const sorted = [...posts].sort((a, b) => new Date(b.date) - new Date(a.date));
                 if (!sorted.length) {
                     containers.forEach((c) => {
-                        c.innerHTML = '<p class="chapter-posts-empty">暂无文章。</p>';
+                        c.innerHTML = `<p class="chapter-posts-empty">${escapeHTML(t('filters.empty.none'))}</p>`;
                     });
                     return;
                 }
@@ -1141,7 +1179,7 @@
             } catch (err) {
                 console.error('文章列表加载失败：', err);
                 containers.forEach((c) => {
-                    c.innerHTML = '<p class="chapter-posts-empty">文章列表加载失败。</p>';
+                    c.innerHTML = `<p class="chapter-posts-empty">${escapeHTML(t('filters.empty.error'))}</p>`;
                 });
             }
         }

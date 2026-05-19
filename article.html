@@ -17,6 +17,10 @@
     <meta name="twitter:card" content="summary">
     <meta name="twitter:title" content="文章 - Amorend">
     <meta name="twitter:description" content="Amorend 的研究手记。">
+    <link rel="alternate" hreflang="zh-CN" href="https://amorend.top/article.html">
+    <link rel="alternate" hreflang="en" href="https://amorend.top/article.html?lang=en">
+    <link rel="alternate" hreflang="x-default" href="https://amorend.top/article.html">
+    <script src="i18n.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -145,7 +149,8 @@
             opacity: 1;
         }
 
-        .theme-toggle {
+        .theme-toggle,
+        .lang-toggle {
             position: relative;
             display: grid;
             place-items: center;
@@ -160,11 +165,19 @@
             transition: border-color 0.25s ease, color 0.25s ease, opacity 0.25s ease, transform 0.25s ease;
         }
 
-        .theme-toggle:hover {
+        .theme-toggle:hover,
+        .lang-toggle:hover {
             border-color: var(--accent);
             color: var(--accent);
             opacity: 1;
             transform: translateY(-2px);
+        }
+
+        .lang-toggle {
+            font-family: var(--font-mono);
+            font-size: 0.72rem;
+            font-weight: 600;
+            letter-spacing: 0.04em;
         }
 
         .theme-toggle svg {
@@ -510,10 +523,11 @@
     <header>
         <a class="logo" href="blog.html">Amorend</a>
         <nav class="nav-links" aria-label="文章导航">
-            <a href="blog.html">博客</a>
-            <a href="blog.html#journal">文章</a>
-            <a href="#contact">联系</a>
+            <a href="blog.html" data-i18n="nav.blog">博客</a>
+            <a href="blog.html#chapter-research-log" data-i18n="nav.channel.research">研究</a>
+            <a href="#contact" data-i18n="nav.contact">联系</a>
         </nav>
+        <button class="lang-toggle" id="lang-toggle" type="button" title="Switch language">EN</button>
         <button class="theme-toggle" id="theme-toggle" type="button" aria-label="切换到亮色模式" title="切换明暗模式">
             <svg class="moon-icon" viewBox="0 0 24 24" aria-hidden="true">
                 <path d="M21 14.6A8.5 8.5 0 0 1 9.4 3a7 7 0 1 0 11.6 11.6Z"/>
@@ -534,7 +548,7 @@
     </div>
 
     <main id="article-root">
-        <div class="loading">文章加载中...</div>
+        <div class="loading" data-i18n="filters.empty.loading">文章加载中...</div>
     </main>
 
     <footer id="contact">
@@ -550,7 +564,10 @@
         const progressText = document.getElementById('progress-text');
         const progressRing = document.getElementById('progress-ring');
         const themeToggle = document.getElementById('theme-toggle');
+        const langToggle = document.getElementById('lang-toggle');
         const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        const i18n = window.__I18N__;
+        const t = i18n ? i18n.t : (k) => k;
 
         if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) {
             root.setAttribute('data-theme', 'light');
@@ -558,8 +575,9 @@
 
         function syncThemeToggleLabel() {
             const isLight = root.getAttribute('data-theme') === 'light';
-            themeToggle.setAttribute('aria-label', isLight ? '切换到深色模式' : '切换到亮色模式');
-            themeToggle.setAttribute('title', isLight ? '切换到深色模式' : '切换到亮色模式');
+            const label = t(isLight ? 'theme.toggle.toDark' : 'theme.toggle.toLight');
+            themeToggle.setAttribute('aria-label', label);
+            themeToggle.setAttribute('title', label);
         }
 
         syncThemeToggleLabel();
@@ -568,6 +586,16 @@
             root.setAttribute('data-theme', root.getAttribute('data-theme') === 'light' ? 'dark' : 'light');
             syncThemeToggleLabel();
         });
+
+        if (i18n) {
+            i18n.applyDataI18n();
+            i18n.bindToggle(langToggle);
+            i18n.onLangChange(() => {
+                i18n.applyDataI18n();
+                syncThemeToggleLabel();
+                renderArticle();
+            });
+        }
 
         if (window.gsap && window.ScrollTrigger) {
             gsap.registerPlugin(ScrollTrigger);
@@ -659,12 +687,32 @@
             setMeta('meta[name="twitter:description"]', 'content', description);
         }
 
+        function localizedField(post, field) {
+            const lang = i18n ? i18n.lang : 'zh';
+            if (lang !== 'zh' && post.i18n && post.i18n[lang] && post.i18n[lang][field]) {
+                return post.i18n[lang][field];
+            }
+            return post[field];
+        }
+
+        function articleHref(slug) {
+            const lang = i18n ? i18n.lang : 'zh';
+            return lang === 'zh'
+                ? `article.html?post=${encodeURIComponent(slug)}`
+                : `article.html?post=${encodeURIComponent(slug)}&lang=${lang}`;
+        }
+
+        function blogHref() {
+            const lang = i18n ? i18n.lang : 'zh';
+            return lang === 'zh' ? 'blog.html' : `blog.html?lang=${lang}`;
+        }
+
         function navCard(post, label) {
             if (!post) return '<span></span>';
             return `
-                <a class="next-card" href="article.html?post=${encodeURIComponent(post.id)}">
-                    <span>${label}</span>
-                    <strong>${escapeHTML(post.title)}</strong>
+                <a class="next-card" href="${articleHref(post.id)}">
+                    <span>${escapeHTML(label)}</span>
+                    <strong>${escapeHTML(localizedField(post, 'title'))}</strong>
                 </a>
             `;
         }
@@ -674,38 +722,54 @@
             const postId = getPostId();
             const index = posts.findIndex((post) => post.id === postId);
             const post = posts[index];
+            const lang = i18n ? i18n.lang : 'zh';
 
             if (!post) {
                 updateArticleMeta({
-                    title: '文章不存在 - Amorend',
-                    description: '这个文章 ID 没有出现在博客索引里，回到博客列表重新选择一篇吧。',
+                    title: t('article.notFound.title'),
+                    description: t('article.notFound.body'),
                     url: 'https://amorend.top/article.html'
                 });
                 articleRoot.innerHTML = `
                     <section class="article-hero">
                         <div class="article-meta"><span class="tag">404</span></div>
-                        <h1 class="article-title">文章不存在</h1>
-                        <p class="article-excerpt">这个文章 ID 没有出现在博客索引里，回到博客列表重新选择一篇吧。</p>
-                        <a class="side-link" href="blog.html">返回博客</a>
+                        <h1 class="article-title">${escapeHTML(t('article.notFound.h1'))}</h1>
+                        <p class="article-excerpt">${escapeHTML(t('article.notFound.body'))}</p>
+                        <a class="side-link" href="${blogHref()}">${escapeHTML(t('article.backToBlog'))}</a>
                     </section>
                 `;
                 return;
             }
 
-            const response = await fetch('blog/' + post.file);
+            // 选择哪份 markdown：英文优先用 post.i18n.en.file，否则 fallback 中文
+            const fileMeta = lang !== 'zh' && post.i18n && post.i18n[lang] && post.i18n[lang].file
+                ? { file: post.i18n[lang].file, fallback: false }
+                : { file: post.file, fallback: lang !== 'zh' };
+
+            const response = await fetch('blog/' + fileMeta.file);
             if (!response.ok) throw new Error('文章文件加载失败：' + response.status);
             const markdown = await response.text();
             const parsed = parseFrontmatter(markdown);
-            const article = { ...post, ...parsed };
+            const article = {
+                ...post,
+                ...parsed,
+                title: localizedField(post, 'title') || parsed.title || post.title,
+                excerpt: localizedField(post, 'excerpt') || parsed.excerpt || post.excerpt
+            };
             const htmlContent = window.marked
                 ? marked.parse(article.content)
                 : '<pre>' + escapeHTML(article.content) + '</pre>';
 
             updateArticleMeta({
                 title: article.title + ' - Amorend',
-                description: article.excerpt || 'Amorend 的研究手记。',
-                url: 'https://amorend.top/article.html?post=' + encodeURIComponent(post.id)
+                description: article.excerpt || t('article.title.default'),
+                url: 'https://amorend.top/article.html?post=' + encodeURIComponent(post.id) + (lang === 'zh' ? '' : '&lang=' + lang)
             });
+
+            const fallbackNotice = fileMeta.fallback
+                ? `<p class="article-excerpt" style="opacity:0.7;font-style:italic">${escapeHTML(t('article.translationMissing'))}</p>`
+                : '';
+
             articleRoot.innerHTML = `
                 <section class="article-hero">
                     <div class="article-meta">
@@ -714,18 +778,19 @@
                     </div>
                     <h1 class="article-title">${escapeHTML(article.title)}</h1>
                     <p class="article-excerpt">${escapeHTML(article.excerpt || '')}</p>
+                    ${fallbackNotice}
                 </section>
 
                 <div class="article-layout">
                     <aside class="article-side">
-                        <a class="side-link" href="blog.html">返回博客</a>
-                        <span>Reading / ${String(index + 1).padStart(2, '0')}</span>
+                        <a class="side-link" href="${blogHref()}">${escapeHTML(t('article.backToBlog'))}</a>
+                        <span>${escapeHTML(t('article.readingLabel'))} / ${String(index + 1).padStart(2, '0')}</span>
                     </aside>
                     <article>
                         <div class="article-body">${htmlContent}</div>
-                        <nav class="article-footer" aria-label="相邻文章">
-                            ${navCard(posts[index + 1], 'Previous Signal')}
-                            ${navCard(posts[index - 1], 'Next Signal')}
+                        <nav class="article-footer" aria-label="${escapeHTML(t('article.prev'))} / ${escapeHTML(t('article.next'))}">
+                            ${navCard(posts[index + 1], t('article.prev'))}
+                            ${navCard(posts[index - 1], t('article.next'))}
                         </nav>
                     </article>
                 </div>
@@ -862,9 +927,9 @@
             articleRoot.innerHTML = `
                 <section class="article-hero">
                     <div class="article-meta"><span class="tag">Error</span></div>
-                    <h1 class="article-title">文章加载失败</h1>
-                    <p class="article-excerpt">请确认本地服务已启动，或刷新页面后重试。</p>
-                    <a class="side-link" href="blog.html">返回博客</a>
+                    <h1 class="article-title">${escapeHTML(t('article.loadFail.title'))}</h1>
+                    <p class="article-excerpt">${escapeHTML(t('article.loadFail.body'))}</p>
+                    <a class="side-link" href="${blogHref()}">${escapeHTML(t('article.backToBlog'))}</a>
                 </section>
             `;
         });
