@@ -19,6 +19,7 @@
     <meta name="twitter:description" content="Amorend 的研究手记。">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@studio-freight/lenis@1.0.42/dist/lenis.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <style>
         :root {
@@ -569,6 +570,27 @@
             gsap.registerPlugin(ScrollTrigger);
         }
 
+        if (window.Lenis && !prefersReducedMotion) {
+            const lenis = new Lenis({
+                duration: 0.92,
+                easing: (t) => 1 - Math.pow(1 - t, 4),
+                smoothWheel: true,
+                touchMultiplier: 1.4
+            });
+
+            if (window.gsap && window.ScrollTrigger) {
+                lenis.on('scroll', ScrollTrigger.update);
+                gsap.ticker.add((time) => lenis.raf(time * 1000));
+                gsap.ticker.lagSmoothing(0);
+            } else {
+                function raf(time) {
+                    lenis.raf(time);
+                    requestAnimationFrame(raf);
+                }
+                requestAnimationFrame(raf);
+            }
+        }
+
         function escapeHTML(value) {
             return String(value)
                 .replace(/&/g, '&amp;')
@@ -735,9 +757,7 @@
             let pointerY = -9999;
             let influence = 0;
             const strings = [];
-            const FRAME_INTERVAL = 1000 / 30;
             const IDLE_TIMEOUT = 4000;
-            let lastDraw = 0;
             let lastActivity = performance.now();
             let rafId = null;
 
@@ -774,11 +794,6 @@
 
             function draw(time) {
                 rafId = null;
-                if (time - lastDraw < FRAME_INTERVAL) {
-                    schedule();
-                    return;
-                }
-                lastDraw = time;
 
                 ctx.clearRect(0, 0, width, height);
                 const styles = getComputedStyle(root);

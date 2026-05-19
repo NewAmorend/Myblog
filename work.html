@@ -20,6 +20,7 @@
     <meta name="twitter:description" content="Amorend 的作品集。">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@studio-freight/lenis@1.0.42/dist/lenis.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <style>
         :root {
@@ -546,8 +547,8 @@
     </div>
 
     <!-- Modal -->
-    <div class="modal-overlay" id="modal-overlay">
-        <div class="modal-content">
+    <div class="modal-overlay" id="modal-overlay" data-lenis-prevent>
+        <div class="modal-content" data-lenis-prevent>
             <div class="modal-close" id="modal-close">
                 <div class="traffic-light"></div>
             </div>
@@ -764,6 +765,9 @@
             document.body.style.width = '100%';
             document.body.style.overflow = 'hidden';
 
+            // 停止 Lenis 平滑滚动
+            if (typeof lenis !== 'undefined' && lenis) lenis.stop();
+
             // 加载作品
             const work = await loadWork(workId);
             if (!work) {
@@ -790,6 +794,9 @@
 
             // 恢复滚动位置
             window.scrollTo(0, scrollY);
+
+            // 恢复 Lenis 平滑滚动
+            if (typeof lenis !== 'undefined' && lenis) lenis.start();
         }
 
         // 点击关闭按钮
@@ -808,6 +815,19 @@
                 closeModal();
             }
         });
+
+        // === Lenis 平滑滚动 ===
+        const lenis = new Lenis({
+            duration: 0.92,
+            easing: (t) => 1 - Math.pow(1 - t, 4),
+            smoothWheel: true,
+            touchMultiplier: 1.4,
+            prevent: (node) => node.closest('[data-lenis-prevent]') !== null
+        });
+
+        lenis.on('scroll', ScrollTrigger.update);
+        gsap.ticker.add((time) => lenis.raf(time * 1000));
+        gsap.ticker.lagSmoothing(0);
 
         // === 主题切换 ===
         const toggleBtn = document.getElementById('theme-toggle');
@@ -878,9 +898,7 @@
 
             const lineCount = 50;
             const lines = [];
-            const FRAME_INTERVAL = 1000 / 30;
             const IDLE_TIMEOUT = 4000;
-            let lastDraw = 0;
             let lastActivity = performance.now();
             let rafId = null;
 
@@ -914,11 +932,6 @@
 
             function animate(now) {
                 rafId = null;
-                if (now - lastDraw < FRAME_INTERVAL) {
-                    schedule();
-                    return;
-                }
-                lastDraw = now;
 
                 ctx.clearRect(0, 0, width, height);
 
