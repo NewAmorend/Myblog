@@ -20,7 +20,6 @@
     <meta name="twitter:description" content="Amorend 的作品集。">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@studio-freight/lenis@1.0.42/dist/lenis.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <style>
         :root {
@@ -530,7 +529,7 @@
     </button>
 
     <!-- 隐藏的音频播放器 -->
-    <audio id="bg-music" loop>
+    <audio id="bg-music" loop preload="none">
         <source src="Music/在雨后醒来.mp3" type="audio/mpeg">
     </audio>
 
@@ -547,8 +546,8 @@
     </div>
 
     <!-- Modal -->
-    <div class="modal-overlay" id="modal-overlay" data-lenis-prevent>
-        <div class="modal-content" data-lenis-prevent>
+    <div class="modal-overlay" id="modal-overlay">
+        <div class="modal-content">
             <div class="modal-close" id="modal-close">
                 <div class="traffic-light"></div>
             </div>
@@ -765,9 +764,6 @@
             document.body.style.width = '100%';
             document.body.style.overflow = 'hidden';
 
-            // 停止 Lenis 平滑滚动
-            lenis.stop();
-
             // 加载作品
             const work = await loadWork(workId);
             if (!work) {
@@ -794,9 +790,6 @@
 
             // 恢复滚动位置
             window.scrollTo(0, scrollY);
-
-            // 恢复 Lenis 平滑滚动
-            lenis.start();
         }
 
         // 点击关闭按钮
@@ -815,30 +808,6 @@
                 closeModal();
             }
         });
-
-        // === Lenis 平滑滚动 ===
-        const lenis = new Lenis({
-            duration: 0.8,
-            easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-            direction: 'vertical',
-            gestureDirection: 'vertical',
-            smooth: true,
-            mouseMultiplier: 1.5,
-            smoothTouch: false,
-            touchMultiplier: 2,
-            prevent: (node) => node.closest('.modal-overlay') !== null,
-        });
-
-        // 与 GSAP 同步
-        lenis.on('scroll', ScrollTrigger.update);
-
-        // 添加到 GSAP ticker
-        gsap.ticker.add((time) => {
-            lenis.raf(time * 1000);
-        });
-
-        // 禁用 lag smoothing 以获得更流畅的体验
-        gsap.ticker.lagSmoothing(0);
 
         // === 主题切换 ===
         const toggleBtn = document.getElementById('theme-toggle');
@@ -864,16 +833,6 @@
         // === 音乐控制 ===
         const bgMusic = document.getElementById('bg-music');
         const musicToggle = document.getElementById('music-toggle');
-
-        function attemptAutoPlay() {
-            bgMusic.play().then(() => {
-                musicToggle.classList.add('playing');
-            }).catch(error => {
-                console.log('自动播放被阻止，需要用户交互');
-            });
-        }
-
-        window.addEventListener('load', attemptAutoPlay);
 
         musicToggle.addEventListener('click', () => {
             if (bgMusic.paused) {
@@ -917,15 +876,20 @@
             let mouseY = -1000;
             let mouseInfluence = 0;
 
-            const lineCount = 80;
+            const lineCount = 50;
             const lines = [];
+            const FRAME_INTERVAL = 1000 / 30;
+            const IDLE_TIMEOUT = 4000;
+            let lastDraw = 0;
+            let lastActivity = performance.now();
+            let rafId = null;
 
             function init() {
                 width = window.innerWidth;
                 height = window.innerHeight;
                 canvas.width = width * dpr;
                 canvas.height = height * dpr;
-                ctx.scale(dpr, dpr);
+                ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
                 lines.length = 0;
                 for (let i = 0; i < lineCount; i++) {
@@ -936,12 +900,29 @@
                         amplitude: 30 + Math.random() * 50
                     });
                 }
+                schedule();
             }
 
-            function animate() {
+            function schedule() {
+                if (rafId == null) rafId = requestAnimationFrame(animate);
+            }
+
+            function bump() {
+                lastActivity = performance.now();
+                schedule();
+            }
+
+            function animate(now) {
+                rafId = null;
+                if (now - lastDraw < FRAME_INTERVAL) {
+                    schedule();
+                    return;
+                }
+                lastDraw = now;
+
                 ctx.clearRect(0, 0, width, height);
 
-                const time = Date.now();
+                const time = now;
                 const baseColor = getComputedStyle(document.body)
                     .getPropertyValue('--accent').trim();
 
@@ -951,7 +932,7 @@
                     ctx.lineWidth = 0.5;
                     ctx.globalAlpha = 0.3;
 
-                    for (let y = 0; y <= height; y += 5) {
+                    for (let y = 0; y <= height; y += 10) {
                         let waveX = Math.sin((y * 0.01) + line.phase + (time * line.speed)) * line.amplitude;
 
                         let rippleDisplacement = 0;
@@ -980,19 +961,23 @@
                 });
 
                 mouseInfluence = Math.max(0, mouseInfluence - 0.02);
-                requestAnimationFrame(animate);
+
+                if (mouseInfluence > 0 || now - lastActivity < IDLE_TIMEOUT) {
+                    schedule();
+                }
             }
 
             document.addEventListener('mousemove', (e) => {
                 mouseX = e.clientX;
                 mouseY = e.clientY;
                 mouseInfluence = Math.min(1, mouseInfluence + 0.1);
-            });
+                bump();
+            }, { passive: true });
 
+            window.addEventListener('scroll', bump, { passive: true });
             window.addEventListener('resize', init);
 
             init();
-            animate();
         })();
     </script>
 </body>
