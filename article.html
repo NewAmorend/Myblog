@@ -574,7 +574,7 @@
         const langToggle = document.getElementById('lang-toggle');
         const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
         const i18n = window.__I18N__;
-        const t = i18n ? i18n.t : (k) => k;
+        const tr = i18n ? i18n.t : (k) => k;
 
         if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) {
             root.setAttribute('data-theme', 'light');
@@ -590,7 +590,7 @@
 
         function syncThemeToggleLabel() {
             const isLight = root.getAttribute('data-theme') === 'light';
-            const label = t(isLight ? 'theme.toggle.toDark' : 'theme.toggle.toLight');
+            const label = tr(isLight ? 'theme.toggle.toDark' : 'theme.toggle.toLight');
             themeToggle.setAttribute('aria-label', label);
             themeToggle.setAttribute('title', label);
             syncHljsTheme();
@@ -742,16 +742,16 @@
 
             if (!post) {
                 updateArticleMeta({
-                    title: t('article.notFound.title'),
-                    description: t('article.notFound.body'),
+                    title: tr('article.notFound.title'),
+                    description: tr('article.notFound.body'),
                     url: 'https://amorend.top/article.html'
                 });
                 articleRoot.innerHTML = `
                     <section class="article-hero">
                         <div class="article-meta"><span class="tag">404</span></div>
-                        <h1 class="article-title">${escapeHTML(t('article.notFound.h1'))}</h1>
-                        <p class="article-excerpt">${escapeHTML(t('article.notFound.body'))}</p>
-                        <a class="side-link" href="${blogHref()}">${escapeHTML(t('article.backToBlog'))}</a>
+                        <h1 class="article-title">${escapeHTML(tr('article.notFound.h1'))}</h1>
+                        <p class="article-excerpt">${escapeHTML(tr('article.notFound.body'))}</p>
+                        <a class="side-link" href="${blogHref()}">${escapeHTML(tr('article.backToBlog'))}</a>
                     </section>
                 `;
                 return;
@@ -778,12 +778,12 @@
 
             updateArticleMeta({
                 title: article.title + ' - Amorend',
-                description: article.excerpt || t('article.title.default'),
+                description: article.excerpt || tr('article.title.default'),
                 url: 'https://amorend.top/article.html?post=' + encodeURIComponent(post.id) + (lang === 'zh' ? '' : '&lang=' + lang)
             });
 
             const fallbackNotice = fileMeta.fallback
-                ? `<p class="article-excerpt" style="opacity:0.7;font-style:italic">${escapeHTML(t('article.translationMissing'))}</p>`
+                ? `<p class="article-excerpt" style="opacity:0.7;font-style:italic">${escapeHTML(tr('article.translationMissing'))}</p>`
                 : '';
 
             articleRoot.innerHTML = `
@@ -799,14 +799,14 @@
 
                 <div class="article-layout">
                     <aside class="article-side">
-                        <a class="side-link" href="${blogHref()}">${escapeHTML(t('article.backToBlog'))}</a>
-                        <span>${escapeHTML(t('article.readingLabel'))} / ${String(index + 1).padStart(2, '0')}</span>
+                        <a class="side-link" href="${blogHref()}">${escapeHTML(tr('article.backToBlog'))}</a>
+                        <span>${escapeHTML(tr('article.readingLabel'))} / ${String(index + 1).padStart(2, '0')}</span>
                     </aside>
                     <article>
                         <div class="article-body">${htmlContent}</div>
-                        <nav class="article-footer" aria-label="${escapeHTML(t('article.prev'))} / ${escapeHTML(t('article.next'))}">
-                            ${navCard(posts[index + 1], t('article.prev'))}
-                            ${navCard(posts[index - 1], t('article.next'))}
+                        <nav class="article-footer" aria-label="${escapeHTML(tr('article.prev'))} / ${escapeHTML(tr('article.next'))}">
+                            ${navCard(posts[index + 1], tr('article.prev'))}
+                            ${navCard(posts[index - 1], tr('article.next'))}
                         </nav>
                     </article>
                 </div>
@@ -949,9 +949,9 @@
             articleRoot.innerHTML = `
                 <section class="article-hero">
                     <div class="article-meta"><span class="tag">Error</span></div>
-                    <h1 class="article-title">${escapeHTML(t('article.loadFail.title'))}</h1>
-                    <p class="article-excerpt">${escapeHTML(t('article.loadFail.body'))}</p>
-                    <a class="side-link" href="${blogHref()}">${escapeHTML(t('article.backToBlog'))}</a>
+                    <h1 class="article-title">${escapeHTML(tr('article.loadFail.title'))}</h1>
+                    <p class="article-excerpt">${escapeHTML(tr('article.loadFail.body'))}</p>
+                    <a class="side-link" href="${blogHref()}">${escapeHTML(tr('article.backToBlog'))}</a>
                 </section>
             `;
         });

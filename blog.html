@@ -860,7 +860,7 @@
         const hasGSAP = window.gsap && window.ScrollTrigger;
         const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
         const i18n = window.__I18N__;
-        const t = i18n ? i18n.t : (k) => k;
+        const tr = i18n ? i18n.t : (k) => k;
         let lenis = null;
         const featureSections = [
             {
@@ -937,7 +937,7 @@
 
         function syncThemeToggleLabel() {
             const isLight = root.getAttribute('data-theme') === 'light';
-            const label = t(isLight ? 'theme.toggle.toDark' : 'theme.toggle.toLight');
+            const label = tr(isLight ? 'theme.toggle.toDark' : 'theme.toggle.toLight');
             elements.themeToggle.setAttribute('aria-label', label);
             elements.themeToggle.setAttribute('title', label);
         }
@@ -1030,24 +1030,24 @@
         }
 
         function createChapter(section, index) {
-            const safeTitle = escapeHTML(t(section.titleKey));
-            const safeExcerpt = escapeHTML(t(section.excerptKey));
-            const safeKicker = escapeHTML(t(section.kickerKey));
-            const safeDate = escapeHTML(t(section.dateKey));
+            const safeTitle = escapeHTML(tr(section.titleKey));
+            const safeExcerpt = escapeHTML(tr(section.excerptKey));
+            const safeKicker = escapeHTML(tr(section.kickerKey));
+            const safeDate = escapeHTML(tr(section.dateKey));
             let action = '';
             if (section.hasArticles) {
                 action = `
                     <div class="chapter-filters" data-filters="${escapeHTML(section.id)}" hidden>
-                        <input type="search" class="chapter-search" placeholder="${escapeHTML(t('filters.search.placeholder'))}" aria-label="${escapeHTML(t('filters.search.aria'))}" data-search>
-                        <div class="chapter-tags" role="group" aria-label="${escapeHTML(t('filters.tags.aria'))}" data-tags></div>
+                        <input type="search" class="chapter-search" placeholder="${escapeHTML(tr('filters.search.placeholder'))}" aria-label="${escapeHTML(tr('filters.search.aria'))}" data-search>
+                        <div class="chapter-tags" role="group" aria-label="${escapeHTML(tr('filters.tags.aria'))}" data-tags></div>
                         <span class="chapter-result-count" data-result-count aria-live="polite"></span>
                     </div>
-                    <div class="chapter-posts" data-articles="${escapeHTML(section.id)}"><p class="chapter-posts-empty">${escapeHTML(t('filters.empty.loading'))}</p></div>
+                    <div class="chapter-posts" data-articles="${escapeHTML(section.id)}"><p class="chapter-posts-empty">${escapeHTML(tr('filters.empty.loading'))}</p></div>
                 `;
             } else if (section.actionType === 'music') {
-                action = `<button class="open-post" type="button" data-play-music>${escapeHTML(t(section.actionKey))}</button>`;
+                action = `<button class="open-post" type="button" data-play-music>${escapeHTML(tr(section.actionKey))}</button>`;
             } else if (section.actionHref) {
-                action = `<a class="open-post" href="${escapeHTML(section.actionHref)}">${escapeHTML(t(section.actionKey))}</a>`;
+                action = `<a class="open-post" href="${escapeHTML(section.actionHref)}">${escapeHTML(tr(section.actionKey))}</a>`;
             }
             return `
                 <article class="chapter" id="chapter-${section.id}">
@@ -1105,12 +1105,12 @@
 
         function renderPosts(container, posts, countEl) {
             if (!posts.length) {
-                container.innerHTML = `<p class="chapter-posts-empty">${escapeHTML(t('filters.empty.noMatch'))}</p>`;
+                container.innerHTML = `<p class="chapter-posts-empty">${escapeHTML(tr('filters.empty.noMatch'))}</p>`;
             } else {
                 container.innerHTML = posts.map(createPostCard).join('');
             }
             if (countEl) {
-                countEl.textContent = t('filters.count', { n: posts.length, m: container.dataset.total });
+                countEl.textContent = tr('filters.count', { n: posts.length, m: container.dataset.total });
             }
         }
 
@@ -1167,7 +1167,7 @@
                 const sorted = [...posts].sort((a, b) => new Date(b.date) - new Date(a.date));
                 if (!sorted.length) {
                     containers.forEach((c) => {
-                        c.innerHTML = `<p class="chapter-posts-empty">${escapeHTML(t('filters.empty.none'))}</p>`;
+                        c.innerHTML = `<p class="chapter-posts-empty">${escapeHTML(tr('filters.empty.none'))}</p>`;
                     });
                     return;
                 }
@@ -1183,7 +1183,7 @@
             } catch (err) {
                 console.error('文章列表加载失败：', err);
                 containers.forEach((c) => {
-                    c.innerHTML = `<p class="chapter-posts-empty">${escapeHTML(t('filters.empty.error'))}</p>`;
+                    c.innerHTML = `<p class="chapter-posts-empty">${escapeHTML(tr('filters.empty.error'))}</p>`;
                 });
             }
         }

@@ -581,7 +581,7 @@
         gsap.registerPlugin(ScrollTrigger);
 
         const i18n = window.__I18N__;
-        const t = i18n ? i18n.t : (k) => k;
+        const tr = i18n ? i18n.t : (k) => k;
 
         // 作品列表（从 index.json 动态加载）
         let works = [];
@@ -690,7 +690,7 @@
             if (index.length === 0) {
                 console.error('No works found');
                 const workGrid = document.getElementById('work-grid');
-                workGrid.innerHTML = `<p style="text-align: center; padding: 3rem; grid-column: 1 / -1;">${t('work.empty')}</p>`;
+                workGrid.innerHTML = `<p style="text-align: center; padding: 3rem; grid-column: 1 / -1;">${tr('work.empty')}</p>`;
                 return;
             }
 
@@ -777,9 +777,9 @@
 
         async function openModal(workId) {
             // 显示加载状态
-            modalTitle.textContent = t('work.modal.loading.title');
+            modalTitle.textContent = tr('work.modal.loading.title');
             modalCode.textContent = '';
-            modalBody.innerHTML = `<p>${t('work.modal.loading.body')}</p>`;
+            modalBody.innerHTML = `<p>${tr('work.modal.loading.body')}</p>`;
             modalOverlay.classList.add('active');
 
             // 保存当前滚动位置
@@ -797,9 +797,9 @@
             // 加载作品
             const work = await loadWork(workId);
             if (!work) {
-                modalTitle.textContent = t('work.modal.fail.title');
+                modalTitle.textContent = tr('work.modal.fail.title');
                 modalCode.textContent = '';
-                modalBody.innerHTML = `<p>${t('work.modal.fail.body')}</p>`;
+                modalBody.innerHTML = `<p>${tr('work.modal.fail.body')}</p>`;
                 return;
             }
 
@@ -880,7 +880,7 @@
 
         function syncThemeToggleLabel() {
             const isLight = root.getAttribute('data-theme') === 'light';
-            const label = t(isLight ? 'theme.toggle.toDark' : 'theme.toggle.toLight');
+            const label = tr(isLight ? 'theme.toggle.toDark' : 'theme.toggle.toLight');
             toggleBtn.setAttribute('aria-label', label);
             toggleBtn.setAttribute('title', label);
             syncHljsTheme();
