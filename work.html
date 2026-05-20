@@ -18,9 +18,13 @@
     <meta property="og:url" content="https://amorend.top/work.html">
     <meta property="og:title" content="作品 - Amorend">
     <meta property="og:description" content="Amorend 的作品集 —— AI Agent 平台、医学影像系统、LLM 框架、知识图谱等项目。">
-    <meta name="twitter:card" content="summary">
+    <meta property="og:image" content="https://amorend.top/og-image.svg">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="作品 - Amorend">
     <meta name="twitter:description" content="Amorend 的作品集。">
+    <meta name="twitter:image" content="https://amorend.top/og-image.svg">
     <script src="i18n.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -29,6 +33,9 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@studio-freight/lenis@1.0.42/dist/lenis.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/styles/gruvbox-dark.min.css" id="hljs-theme-dark">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/styles/gruvbox-light.min.css" id="hljs-theme-light" disabled>
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/highlight.min.js"></script>
     <style>
         :root {
             --bg: #11110f;
@@ -800,6 +807,12 @@
             modalTitle.textContent = work.title;
             modalCode.textContent = work.code;
             modalBody.innerHTML = work.htmlContent;
+
+            if (window.hljs) {
+                modalBody.querySelectorAll('pre code').forEach((block) => {
+                    try { hljs.highlightElement(block); } catch (e) { /* unknown lang */ }
+                });
+            }
         }
 
         function closeModal() {
@@ -857,11 +870,20 @@
             root.setAttribute('data-theme', 'light');
         }
 
+        function syncHljsTheme() {
+            const isLight = root.getAttribute('data-theme') === 'light';
+            const dark = document.getElementById('hljs-theme-dark');
+            const light = document.getElementById('hljs-theme-light');
+            if (dark) dark.disabled = isLight;
+            if (light) light.disabled = !isLight;
+        }
+
         function syncThemeToggleLabel() {
             const isLight = root.getAttribute('data-theme') === 'light';
             const label = t(isLight ? 'theme.toggle.toDark' : 'theme.toggle.toLight');
             toggleBtn.setAttribute('aria-label', label);
             toggleBtn.setAttribute('title', label);
+            syncHljsTheme();
         }
 
         syncThemeToggleLabel();

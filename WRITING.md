@@ -170,6 +170,42 @@ English body...
 
 ---
 
+## OG 图（社交分享缩略图）
+
+四个页面都引用了 `https://amorend.top/og-image.svg`，分享到 Facebook / LinkedIn / 微信 等大部分平台会显示这张缩略图。
+
+源文件是 SVG（`og-image.svg`），1200×630。优势：可矢量缩放、文件小、易改。Twitter 历史上对 SVG 的支持时好时坏；如果发现 X / Twitter 抓不到缩略图，做一份 PNG 副本：
+
+```bash
+# macOS（用 librsvg, brew install librsvg）
+rsvg-convert -w 1200 -h 630 og-image.svg > og-image.png
+
+# 或在线工具：把 og-image.svg 拖到 cloudconvert.com 转 1200×630 PNG
+```
+
+转完后改 4 个 HTML 文件里的 `og:image` 引用从 `og-image.svg` 改为 `og-image.png`。
+
+调试社交卡片缩略图：[Facebook Sharing Debugger](https://developers.facebook.com/tools/debug/) / [Twitter Card Validator](https://cards-dev.twitter.com/validator) / 微信扫码看分享卡片。
+
+---
+
+## 代码高亮
+
+文章正文（article.html）和作品详情（work.html modal）都接入了 [highlight.js](https://highlightjs.org/)，主题用 **gruvbox-dark** / **gruvbox-light**，跟站点主题自动切换。
+
+写代码块时用 fenced code block + 语言名：
+
+````markdown
+```python
+def hello():
+    print("Hi")
+```
+````
+
+支持的语言见 highlight.js 文档（Python/JS/TS/Rust/Go/Bash/SQL/JSON/YAML/HTML/CSS 都齐了）。未指定语言或语言不认识时回退到无样式 plain text。
+
+---
+
 ## 本地预览
 
 不需要构建工具，纯静态：

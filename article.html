@@ -14,9 +14,13 @@
     <meta property="og:url" content="https://amorend.top/article.html">
     <meta property="og:title" content="文章 - Amorend">
     <meta property="og:description" content="Amorend 的研究手记 —— AI Agent、LLM、医学影像、计算机视觉方向的文章。">
-    <meta name="twitter:card" content="summary">
+    <meta property="og:image" content="https://amorend.top/og-image.svg">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="文章 - Amorend">
     <meta name="twitter:description" content="Amorend 的研究手记。">
+    <meta name="twitter:image" content="https://amorend.top/og-image.svg">
     <link rel="alternate" hreflang="zh-CN" href="https://amorend.top/article.html">
     <link rel="alternate" hreflang="en" href="https://amorend.top/article.html?lang=en">
     <link rel="alternate" hreflang="x-default" href="https://amorend.top/article.html">
@@ -28,6 +32,9 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@studio-freight/lenis@1.0.42/dist/lenis.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/styles/gruvbox-dark.min.css" id="hljs-theme-dark">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/styles/gruvbox-light.min.css" id="hljs-theme-light" disabled>
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/highlight.min.js"></script>
     <style>
         :root {
             --bg: #11110f;
@@ -573,11 +580,20 @@
             root.setAttribute('data-theme', 'light');
         }
 
+        function syncHljsTheme() {
+            const isLight = root.getAttribute('data-theme') === 'light';
+            const dark = document.getElementById('hljs-theme-dark');
+            const light = document.getElementById('hljs-theme-light');
+            if (dark) dark.disabled = isLight;
+            if (light) light.disabled = !isLight;
+        }
+
         function syncThemeToggleLabel() {
             const isLight = root.getAttribute('data-theme') === 'light';
             const label = t(isLight ? 'theme.toggle.toDark' : 'theme.toggle.toLight');
             themeToggle.setAttribute('aria-label', label);
             themeToggle.setAttribute('title', label);
+            syncHljsTheme();
         }
 
         syncThemeToggleLabel();
@@ -795,6 +811,12 @@
                     </article>
                 </div>
             `;
+
+            if (window.hljs) {
+                articleRoot.querySelectorAll('pre code').forEach((block) => {
+                    try { hljs.highlightElement(block); } catch (e) { /* unknown lang fallback */ }
+                });
+            }
 
             if (window.gsap && !prefersReducedMotion) {
                 gsap.from('.article-title', { y: 80, opacity: 0, duration: 0.9, ease: 'power4.out' });

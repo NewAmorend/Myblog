@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#11110f"/>
+      <stop offset="55%" stop-color="#1a1916"/>
+      <stop offset="100%" stop-color="#11110f"/>
+    </linearGradient>
+    <linearGradient id="brand" x1="0" y1="0" x2="1" y2="0.2">
+      <stop offset="0%" stop-color="#d75b3f"/>
+      <stop offset="100%" stop-color="#b8a45d"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1200" height="630" fill="url(#bg)"/>
+
+  <!-- Wavy lines decoration (echoing the canvas art on the site) -->
+  <g stroke="#efeadf" stroke-width="0.7" fill="none" opacity="0.18">
+    <path d="M-20 110 Q 200 75, 420 110 T 860 110 T 1220 110"/>
+    <path d="M-20 175 Q 200 215, 420 175 T 860 175 T 1220 175"/>
+    <path d="M-20 240 Q 200 200, 420 240 T 860 240 T 1220 240"/>
+    <path d="M-20 470 Q 200 510, 420 470 T 860 470 T 1220 470"/>
+    <path d="M-20 535 Q 200 495, 420 535 T 860 535 T 1220 535"/>
+    <path d="M-20 600 Q 200 640, 420 600 T 860 600 T 1220 600"/>
+  </g>
+
+  <g stroke="#d75b3f" stroke-width="0.9" fill="none" opacity="0.32">
+    <path d="M-20 145 Q 200 110, 420 145 T 860 145 T 1220 145"/>
+    <path d="M-20 505 Q 200 540, 420 505 T 860 505 T 1220 505"/>
+  </g>
+
+  <!-- Right-side concentric circles -->
+  <g transform="translate(990, 315)" stroke="#d75b3f" fill="none" opacity="0.5">
+    <circle r="150" stroke-width="0.8"/>
+    <circle r="110" stroke-width="1"/>
+    <circle r="70" stroke-width="1.2"/>
+    <circle r="30" stroke-width="1.4"/>
+    <circle r="6" fill="#d75b3f" stroke="none" opacity="0.9"/>
+  </g>
+
+  <!-- Eyebrow -->
+  <text x="80" y="180"
+        font-family="'JetBrains Mono', 'SF Mono', Monaco, ui-monospace, monospace"
+        font-size="18"
+        letter-spacing="2"
+        fill="#efeadf"
+        opacity="0.65">
+    V_2026 / RESEARCH NOTES / BUILT BY AMOREND
+  </text>
+
+  <!-- Logotype -->
+  <text x="80" y="340"
+        font-family="'JetBrains Mono', 'SF Mono', Monaco, ui-monospace, monospace"
+        font-size="128"
+        font-weight="800"
+        letter-spacing="-2"
+        fill="url(#brand)">
+    AMOREND
+  </text>
+
+  <!-- Tagline -->
+  <text x="80" y="410"
+        font-family="'Inter', 'Helvetica Neue', 'PingFang SC', sans-serif"
+        font-size="26"
+        font-weight="400"
+        fill="#efeadf"
+        opacity="0.86">
+    AI Agents · LLMs · Computer Vision · Medical Imaging
+  </text>
+
+  <text x="80" y="448"
+        font-family="'Inter', 'Helvetica Neue', 'PingFang SC', sans-serif"
+        font-size="22"
+        font-weight="300"
+        fill="#efeadf"
+        opacity="0.55">
+    研究手记 · 工程实践 · 一根可被滚动拨动的弦
+  </text>
+
+  <!-- Bottom bar -->
+  <line x1="80" y1="560" x2="1120" y2="560" stroke="#efeadf" stroke-opacity="0.16" stroke-width="0.8"/>
+
+  <text x="80" y="595"
+        font-family="'JetBrains Mono', 'SF Mono', Monaco, ui-monospace, monospace"
+        font-size="20"
+        font-weight="500"
+        fill="#d75b3f">
+    amorend.top
+  </text>
+
+  <text x="1120" y="595"
+        text-anchor="end"
+        font-family="'JetBrains Mono', 'SF Mono', Monaco, ui-monospace, monospace"
+        font-size="18"
+        fill="#efeadf"
+        opacity="0.5">
+    XMUM / Software Engineering
+  </text>
+</svg>
