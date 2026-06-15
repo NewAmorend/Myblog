@@ -11,7 +11,7 @@ tag: Research-Agent
 2. 如何实现Agent的自主性，主动检索相关文件、补足缺失信息、优化报告
 3. 长程思考
 # 项目整体架构
-![播放器截图20260602150831](assets/blog/obsidian/self-evolving-deepresearch-agent-01.jpg)
+
 用户输入Query之后，先生成针对Query的研究简报和提纲，根据提纲打一个报告草稿，随后进入多智能体系统，主要分为主Agent和子Agent，主Agent会调用子Agent对草稿的质量进行评估，发现草稿中的不足或缺陷后再进行调研，查看是否是真的有缺陷，如果有如何进行修改或补充，主Agent则主要负责编排子Agent，给他们派发任务。
 
 # 基于TTD-DR思想的去噪机制
