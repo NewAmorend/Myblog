@@ -670,7 +670,7 @@
         if (count) count.textContent = String(posts.length).padStart(2, "0") + " 篇文章";
         target.innerHTML = posts.map(postCard).join("");
         splitText();
-        initAnimations();
+        if (page !== "blog") initAnimations();
     }
 
     async function loadWork(workId) {
@@ -885,9 +885,7 @@
             </div>
         `;
 
-        initScopedOrnaments();
         typesetMath(articleRoot);
-        initAnimations(articleRoot);
     }
 
     function renderError(error) {
@@ -898,9 +896,7 @@
     }
 
     async function initPage() {
-        initBackgroundMotion();
         splitText();
-        initScopedOrnaments();
 
         if (page === "home") await renderHome();
         if (page === "blog") await renderBlog();
