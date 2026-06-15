@@ -9,6 +9,17 @@
     <link rel="stylesheet" href="assets/site.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" defer></script>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js" defer></script>
+    <script>
+        window.MathJax = {
+            tex: {
+                displayMath: [["$$", "$$"], ["\\[", "\\]"]],
+                inlineMath: [["\\(", "\\)"]]
+            },
+            svg: { fontCache: "global" },
+            startup: { typeset: false }
+        };
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" async></script>
     <script src="assets/site.js" defer></script>
 </head>
 <body data-page="article">

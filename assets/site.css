@@ -1454,7 +1454,8 @@ body.menu-open .menu-toggle::after {
 .article-body ul,
 .article-body ol,
 .article-body blockquote,
-.article-body pre {
+.article-body pre,
+.article-body table {
     margin-bottom: 1.15rem;
 }
 
@@ -1472,6 +1473,36 @@ body.menu-open .menu-toggle::after {
 .article-body a {
     color: var(--accent);
     border-bottom: 1px solid currentColor;
+}
+
+.article-body img {
+    display: block;
+    max-width: 100%;
+    height: auto;
+    margin: 1.35rem 0;
+    border: 1px solid var(--line-strong);
+    background: var(--surface);
+}
+
+.article-body table {
+    display: block;
+    width: 100%;
+    overflow-x: auto;
+    border-collapse: collapse;
+    font-size: 0.95em;
+}
+
+.article-body th,
+.article-body td {
+    border: 1px solid var(--line-strong);
+    padding: 0.62rem 0.75rem;
+    text-align: left;
+    vertical-align: top;
+}
+
+.article-body th {
+    background: var(--surface);
+    color: var(--paper);
 }
 
 .article-body code {
@@ -1494,6 +1525,13 @@ body.menu-open .menu-toggle::after {
     border: 0;
     padding: 0;
     background: transparent;
+}
+
+.article-body mjx-container {
+    max-width: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding: 0.25rem 0;
 }
 
 .article-footer {

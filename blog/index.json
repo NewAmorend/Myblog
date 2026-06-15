@@ -1,11 +1,91 @@
 [
   {
-    "id": "data-collection",
-    "file": "Data-Collection.md",
-    "title": "自媒体运营心得体会",
-    "date": "2026-02-27",
-    "tag": "Mindset",
-    "excerpt": "在无聊的寒假末尾机缘巧合下接触到了一个有趣的朋友，她是个互联网AI资讯博主，而我当起了她的小助理，也算半只脚踏进了自媒体行业。本文分享数据收集AI化、自媒体账号打法等运营心得。"
+    "id": "hydride-research-ranking",
+    "file": "hydride-research-ranking.md",
+    "title": "Hydride Research 工作原理：BM25、向量检索与 RRF 排序",
+    "date": "2026-06-09",
+    "tag": "RAG",
+    "excerpt": "梳理关键字搜索、向量搜索和 Hybrid Search 的排序逻辑，并解释 RRF 如何统一不同检索通道的排名。"
+  },
+  {
+    "id": "recommendation-metrics",
+    "file": "recommendation-metrics.md",
+    "title": "推荐系统的指标设计",
+    "date": "2026-06-09",
+    "tag": "Recommendation",
+    "excerpt": "用 Accuracy@N、MRR@N 和 nDCG 三个指标理解推荐与检索系统如何评价结果命中率和排序质量。"
+  },
+  {
+    "id": "self-evolving-deepresearch-agent",
+    "file": "self-evolving-deepresearch-agent.md",
+    "title": "自进化的基于对抗去噪抗干扰的 DeepResearch Agent",
+    "date": "2026-06-09",
+    "tag": "Research-Agent",
+    "excerpt": "围绕 DeepResearch Agent 的研究任务挑战、整体架构和红蓝对抗式去噪机制，记录一个自进化研究代理的设计思路。"
+  },
+  {
+    "id": "agent-car-assistant",
+    "file": "agent-car-assistant.md",
+    "title": "Agent 车机助手架构学习笔记",
+    "date": "2026-06-02",
+    "tag": "AI-Agent",
+    "excerpt": "从音频采集、ASR、拒识模型、意图召回到 NLU 和 MCP 调用，梳理车载语音助手的核心链路。"
+  },
+  {
+    "id": "agent-trajectory-introduction",
+    "file": "agent-trajectory-introduction.md",
+    "title": "Agent 轨迹的基本介绍",
+    "date": "2026-05-22",
+    "tag": "AI-Agent",
+    "excerpt": "介绍 Agent Trajectory 的定义、基本格式、ATIF 标准、质量评估指标，以及轨迹数据在训练中的应用。"
+  },
+  {
+    "id": "continual-learning-ai-agents",
+    "file": "continual-learning-ai-agents.md",
+    "title": "Continual Learning for AI Agents",
+    "date": "2026-05-12",
+    "tag": "Continual-Learning",
+    "excerpt": "从 Model、Harness、Content 三个层面理解 AI Agent 的持续学习，并把 trace、feedback 与 skills 串成一套演化框架。"
+  },
+  {
+    "id": "continual-learning-three-levels",
+    "file": "continual-learning-three-levels.md",
+    "title": "Continual Learning for AI Agents - 三个层面",
+    "date": "2026-05-12",
+    "tag": "Continual-Learning",
+    "excerpt": "把持续学习拆成权重级、设施级和上下文级三个层面，比较它们的成本、频率和适用场景。"
+  },
+  {
+    "id": "continual-learning-trace-feedback",
+    "file": "continual-learning-trace-feedback.md",
+    "title": "Trace + Feedback：持续学习的燃料",
+    "date": "2026-05-12",
+    "tag": "Continual-Learning",
+    "excerpt": "Trace 记录发生了什么，Feedback 判断做得好不好。本文讨论二者如何共同成为 Agent 持续学习的燃料。"
+  },
+  {
+    "id": "continual-learning-skills-management",
+    "file": "continual-learning-skills-management.md",
+    "title": "Skills 的产出与管理",
+    "date": "2026-05-12",
+    "tag": "Continual-Learning",
+    "excerpt": "从 Trace + Feedback 到 Skills，进一步思考何时产出 Skill、如何管理已有 Skill，以及 Skill Curator 的角色。"
+  },
+  {
+    "id": "tcp-ip-basics",
+    "file": "tcp-ip-basics.md",
+    "title": "计算机网络的基本概念",
+    "date": "2026-04-22",
+    "tag": "Computer-Networks",
+    "excerpt": "从 TCP/IP 四层模型切入，解释应用层、传输层、网络层和网络接口层的职责与关键概念。"
+  },
+  {
+    "id": "claude-agent-harness-key-insight",
+    "file": "claude-agent-harness-key-insight.md",
+    "title": "Claude Agent Harness Key Insight",
+    "date": "2026-04-16",
+    "tag": "Harness",
+    "excerpt": "围绕 Claude Agent Harness 的设计哲学，讨论上下文焦虑、独立评估、多智能体分工和 prompt 措辞对输出气质的影响。"
   },
   {
     "id": "ai-agent-paradigms",
@@ -14,45 +94,5 @@
     "date": "2026-04-04",
     "tag": "AI-Agent",
     "excerpt": "AI Agent 正在成为人工智能领域最热门的话题之一。本文从 ReAct、Reflection、Plan-Solve 三种范式切入，梳理 Agent 的思考-执行模式。"
-  },
-  {
-    "id": "medical-cv",
-    "file": "medical-cv.md",
-    "title": "医学影像分析中的深度学习技术",
-    "date": "2026-01-10",
-    "tag": "Computer-Vision",
-    "excerpt": "医学影像分析是 AI 医疗应用的重要领域。本文分享我们在病理图像分析项目中的实践经验。"
-  },
-  {
-    "id": "llm-finetuning",
-    "file": "llm-finetuning.md",
-    "title": "大语言模型微调实践指南",
-    "date": "2026-01-05",
-    "tag": "LLM",
-    "excerpt": "从数据准备到模型部署，本文详细记录大语言模型微调的完整流程。"
-  },
-  {
-    "id": "ai-infra",
-    "file": "ai-infra.md",
-    "title": "构建高效的 AI 基础设施",
-    "date": "2025-12-28",
-    "tag": "AI-Infra",
-    "excerpt": "如何设计和搭建可扩展的 AI 基础设施，支持大规模模型训练和推理。"
-  },
-  {
-    "id": "vqa-research",
-    "file": "vqa-research.md",
-    "title": "知识增强型视觉问答系统研究",
-    "date": "2025-12-20",
-    "tag": "Research",
-    "excerpt": "探讨如何将外部知识库与视觉语言模型结合，提升 VQA 系统的性能。"
-  },
-  {
-    "id": "pathology-vlp",
-    "file": "pathology-vlp.md",
-    "title": "病理视觉-语言预训练的增强方法",
-    "date": "2025-12-15",
-    "tag": "Pathology",
-    "excerpt": "介绍我们在 BIBM 2025 发表的研究工作，提出了一种鲁棒的病理 VLP 基线。"
   }
 ]

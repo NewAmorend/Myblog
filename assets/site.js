@@ -814,6 +814,24 @@
         `;
     }
 
+    function typesetMath(scope) {
+        if (!window.MathJax) return;
+
+        const run = () => {
+            if (typeof window.MathJax.typesetPromise !== "function") return;
+            window.MathJax.typesetPromise([scope]).catch((error) => {
+                console.warn("MathJax 渲染失败", error);
+            });
+        };
+
+        if (typeof window.MathJax.typesetPromise === "function") {
+            run();
+            return;
+        }
+
+        window.addEventListener("load", run, { once: true });
+    }
+
     async function renderArticle() {
         const articleRoot = qs("[data-article-root]");
         if (!articleRoot) return;
@@ -868,6 +886,7 @@
         `;
 
         initScopedOrnaments();
+        typesetMath(articleRoot);
         initAnimations(articleRoot);
     }
 
