@@ -1,66 +1,18 @@
 [
   {
-    "id": "ai-agent-platform",
-    "file": "ai-agent-platform.md",
-    "title": "AI Agent 研究平台",
-    "code": "#2024-001",
-    "tags": ["AI-Agent", "Python"],
-    "description": "基于大语言模型的智能Agent系统，支持多模态交互和自主决策。"
+    "id": "self-evolving-deepresearch-agent",
+    "file": "self-evolving-deepresearch-agent.md",
+    "title": "自进化 DeepResearch Agent",
+    "code": "#AGENT-001",
+    "tags": ["Multi-Agent", "DeepResearch", "Adversarial"],
+    "description": "多智能体 DeepResearch Agent：研究简报 → 草稿 → 红蓝对抗去噪（TTD-DR）的自进化研究报告生成系统。"
   },
   {
-    "id": "medical-imaging-system",
-    "file": "medical-imaging-system.md",
-    "title": "医学影像分析系统",
-    "code": "#2023-008",
-    "tags": ["Computer-Vision", "Medical-AI"],
-    "description": "深度学习驱动的病理图像分析平台，实现自动化诊断辅助。"
-  },
-  {
-    "id": "portfolio",
-    "file": "portfolio.md",
-    "title": "个人作品集网站",
-    "code": "#PORT-FOLIO",
-    "tags": ["Web-Dev", "GSAP"],
-    "description": "使用现代前端技术构建的个人网站，展示项目和研究成果。"
-  },
-  {
-    "id": "saas-platform",
-    "file": "saas-platform.md",
-    "title": "SaaS 平台开发",
-    "code": "#DEV-TOOL",
-    "tags": ["Full-Stack", "React"],
-    "description": "全栈开发的SaaS工具，提供高效的团队协作和项目管理功能。"
-  },
-  {
-    "id": "knowledge-graph",
-    "file": "knowledge-graph.md",
-    "title": "知识图谱可视化",
-    "code": "#2023-005",
-    "tags": ["D3.js", "Data-Viz"],
-    "description": "交互式知识图谱可视化工具，支持大规模数据展示和探索。"
-  },
-  {
-    "id": "llm-framework",
-    "file": "llm-framework.md",
-    "title": "LLM 微调框架",
-    "code": "#2023-003",
-    "tags": ["LLM", "PyTorch"],
-    "description": "开源的大语言模型微调框架，简化模型适配流程。"
-  },
-  {
-    "id": "video-processing",
-    "file": "video-processing.md",
-    "title": "实时视频处理系统",
-    "code": "#2022-012",
-    "tags": ["CUDA", "CPP"],
-    "description": "基于GPU加速的实时视频处理和分析平台。"
-  },
-  {
-    "id": "recommendation-engine",
-    "file": "recommendation-engine.md",
-    "title": "智能推荐引擎",
-    "code": "#2022-008",
-    "tags": ["ML", "Recommendation"],
-    "description": "基于协同过滤和深度学习的个性化推荐系统。"
+    "id": "hydride-research",
+    "file": "hydride-research-ranking.md",
+    "title": "Hydride Research",
+    "code": "#RAG-001",
+    "tags": ["RAG", "Hybrid-Search", "RRF"],
+    "description": "Hybrid 检索研究系统：BM25 关键字 + 向量语义 + RRF 融合排序，统一多路检索通道的排名。"
   }
 ]

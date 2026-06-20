@@ -1,7 +1,7 @@
 ---
-title: 自进化的基于对抗去噪抗干扰的 DeepResearch Agent
+title: 自进化 DeepResearch Agent
 date: 2026-06-09
-tag: Research-Agent
+tags: Multi-Agent, DeepResearch, Adversarial
 ---
 
 # 前言
