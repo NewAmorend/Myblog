@@ -33,7 +33,6 @@ async function main() {
   const urls = [
     entry(`${SITE}/`, today, 'weekly', '1.0'),
     entry(`${SITE}/blog.html`, today, 'weekly', '0.9'),
-    entry(`${SITE}/work.html`, today, 'monthly', '0.8'),
     ...sortedBlog.map((post) =>
       entry(
         `${SITE}/article.html?post=${encodeURIComponent(post.id)}`,

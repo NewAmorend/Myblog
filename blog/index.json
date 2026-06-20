@@ -1,11 +1,27 @@
 [
   {
+    "id": "hydride-research-ranking",
+    "file": "hydride-research-ranking.md",
+    "title": "Hydride Research 工作原理：BM25、向量检索与 RRF 排序",
+    "date": "2026-06-09",
+    "tag": "RAG",
+    "excerpt": "梳理关键字搜索、向量搜索和 Hybrid Search 的排序逻辑，并解释 RRF 如何统一不同检索通道的排名。"
+  },
+  {
     "id": "recommendation-metrics",
     "file": "recommendation-metrics.md",
     "title": "推荐系统的指标设计",
     "date": "2026-06-09",
     "tag": "Recommendation",
     "excerpt": "用 Accuracy@N、MRR@N 和 nDCG 三个指标理解推荐与检索系统如何评价结果命中率和排序质量。"
+  },
+  {
+    "id": "self-evolving-deepresearch-agent",
+    "file": "self-evolving-deepresearch-agent.md",
+    "title": "自进化的基于对抗去噪抗干扰的 DeepResearch Agent",
+    "date": "2026-06-09",
+    "tag": "Research-Agent",
+    "excerpt": "围绕 DeepResearch Agent 的研究任务挑战、整体架构和红蓝对抗式去噪机制，记录一个自进化研究代理的设计思路。"
   },
   {
     "id": "agent-car-assistant",

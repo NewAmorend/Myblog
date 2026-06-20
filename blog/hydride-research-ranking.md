@@ -1,7 +1,7 @@
 ---
-title: Hydride Research
+title: Hydride Research 工作原理：BM25、向量检索与 RRF 排序
 date: 2026-06-09
-tags: RAG, Hybrid-Search, RRF
+tag: RAG
 ---
 
 ## 关键字搜索的排序
