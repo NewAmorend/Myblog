@@ -1,99 +1,88 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
   <defs>
-    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0%" stop-color="#080808"/>
-      <stop offset="55%" stop-color="#151515"/>
-      <stop offset="100%" stop-color="#080808"/>
-    </linearGradient>
-    <linearGradient id="brand" x1="0" y1="0" x2="1" y2="0.2">
-      <stop offset="0%" stop-color="#f4f4f4"/>
-      <stop offset="100%" stop-color="#9c9c9c"/>
-    </linearGradient>
+    <radialGradient id="sky" cx="50%" cy="34%" r="80%">
+      <stop offset="0%" stop-color="#15140f"/>
+      <stop offset="55%" stop-color="#0c0b0c"/>
+      <stop offset="100%" stop-color="#050506"/>
+    </radialGradient>
+    <radialGradient id="eclipse" cx="44%" cy="40%" r="62%">
+      <stop offset="0%" stop-color="#e8e3d7" stop-opacity="0.92"/>
+      <stop offset="50%" stop-color="#8a857a" stop-opacity="0.5"/>
+      <stop offset="100%" stop-color="#0b0b0c" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="vig" cx="50%" cy="48%" r="75%">
+      <stop offset="55%" stop-color="#000000" stop-opacity="0"/>
+      <stop offset="100%" stop-color="#000000" stop-opacity="0.6"/>
+    </radialGradient>
+    <filter id="grain">
+      <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" stitchTiles="stitch"/>
+      <feColorMatrix type="saturate" values="0"/>
+      <feComponentTransfer><feFuncA type="linear" slope="0.06"/></feComponentTransfer>
+      <feComposite operator="over" in2="SourceGraphic"/>
+    </filter>
   </defs>
 
-  <rect width="1200" height="630" fill="url(#bg)"/>
+  <rect width="1200" height="630" fill="url(#sky)"/>
 
-  <!-- 灰阶波纹装饰 -->
-  <g stroke="#f4f4f4" stroke-width="0.7" fill="none" opacity="0.18">
-    <path d="M-20 110 Q 200 75, 420 110 T 860 110 T 1220 110"/>
-    <path d="M-20 175 Q 200 215, 420 175 T 860 175 T 1220 175"/>
-    <path d="M-20 240 Q 200 200, 420 240 T 860 240 T 1220 240"/>
-    <path d="M-20 470 Q 200 510, 420 470 T 860 470 T 1220 470"/>
-    <path d="M-20 535 Q 200 495, 420 535 T 860 535 T 1220 535"/>
-    <path d="M-20 600 Q 200 640, 420 600 T 860 600 T 1220 600"/>
+  <!-- distant eclipse -->
+  <circle cx="930" cy="250" r="210" fill="url(#eclipse)"/>
+  <circle cx="930" cy="250" r="210" fill="none" stroke="#b8916a" stroke-opacity="0.4" stroke-width="0.8"/>
+  <circle cx="1015" cy="185" r="4" fill="#b8916a"/>
+
+  <!-- wind streaks -->
+  <g stroke="#e8e3d7" fill="none" opacity="0.10">
+    <path d="M-20 120 H1220" stroke-width="0.6"/>
+    <path d="M-20 165 H820" stroke-width="0.6"/>
+    <path d="M300 205 H1220" stroke-width="0.6"/>
+    <path d="M-20 430 H640" stroke-width="0.6"/>
+    <path d="M520 470 H1220" stroke-width="0.6"/>
+    <path d="M-20 510 H1220" stroke-width="0.6"/>
   </g>
 
-  <g stroke="#f2f2f2" stroke-width="0.9" fill="none" opacity="0.28">
-    <path d="M-20 145 Q 200 110, 420 145 T 860 145 T 1220 145"/>
-    <path d="M-20 505 Q 200 540, 420 505 T 860 505 T 1220 505"/>
-  </g>
+  <!-- the plain / horizon -->
+  <line x1="0" y1="408" x2="1200" y2="408" stroke="#e8e3d7" stroke-opacity="0.55" stroke-width="1"/>
+  <line x1="0" y1="412" x2="1200" y2="412" stroke="#e8e3d7" stroke-opacity="0.12" stroke-width="1"/>
 
-  <!-- 右侧同心圆 -->
-  <g transform="translate(990, 315)" stroke="#f2f2f2" fill="none" opacity="0.44">
-    <circle r="150" stroke-width="0.8"/>
-    <circle r="110" stroke-width="1"/>
-    <circle r="70" stroke-width="1.2"/>
-    <circle r="30" stroke-width="1.4"/>
-    <circle r="6" fill="#f2f2f2" stroke="none" opacity="0.9"/>
-  </g>
+  <rect width="1200" height="630" fill="url(#vig)"/>
+  <rect width="1200" height="630" filter="url(#grain)" opacity="0.5"/>
 
-  <!-- Eyebrow -->
-  <text x="80" y="180"
-        font-family="'JetBrains Mono', 'SF Mono', Monaco, ui-monospace, monospace"
-        font-size="18"
-        letter-spacing="2"
-        fill="#f4f4f4"
-        opacity="0.65">
-    V_2026 / RESEARCH NOTES / BUILT BY AMOREND
+  <!-- top frame -->
+  <line x1="64" y1="56" x2="1136" y2="56" stroke="#e8e3d7" stroke-opacity="0.2" stroke-width="0.8"/>
+
+  <!-- eyebrow -->
+  <text x="64" y="120"
+        font-family="'JetBrains Mono','SF Mono',Monaco,monospace"
+        font-size="20" letter-spacing="6"
+        fill="#b8b3a8" opacity="0.85">
+    AGENTS · RETRIEVAL · ENGINEERING NOTES
   </text>
 
-  <!-- Logotype -->
-  <text x="80" y="340"
-        font-family="'JetBrains Mono', 'SF Mono', Monaco, ui-monospace, monospace"
-        font-size="128"
-        font-weight="800"
-        letter-spacing="-2"
-        fill="url(#brand)">
-    AMOREND
+  <!-- wordmark (serif) -->
+  <text x="60" y="350"
+        font-family="'Cormorant Garamond', Georgia, 'Songti SC', serif"
+        font-size="168" font-style="italic" font-weight="500"
+        fill="#e8e3d7" letter-spacing="-2">
+    Amorend
   </text>
 
-  <!-- Tagline -->
-  <text x="80" y="410"
-        font-family="'Inter', 'Helvetica Neue', 'PingFang SC', sans-serif"
-        font-size="26"
-        font-weight="400"
-        fill="#f4f4f4"
-        opacity="0.86">
-    AI Agents · LLMs · Computer Vision · Medical Imaging
+  <!-- tagline -->
+  <text x="64" y="402"
+        font-family="'Inter','Helvetica Neue','PingFang SC',sans-serif"
+        font-size="27" font-weight="400" fill="#cfcab0">
+    <tspan>把正在形成的技术判断，写下来。</tspan>
   </text>
 
-  <text x="80" y="448"
-        font-family="'Inter', 'Helvetica Neue', 'PingFang SC', sans-serif"
-        font-size="22"
-        font-weight="300"
-        fill="#f4f4f4"
-        opacity="0.55">
-    研究手记 · 工程实践 · 一根可被滚动拨动的弦
-  </text>
-
-  <!-- Bottom bar -->
-  <line x1="80" y1="560" x2="1120" y2="560" stroke="#f4f4f4" stroke-opacity="0.16" stroke-width="0.8"/>
-
-  <text x="80" y="595"
-        font-family="'JetBrains Mono', 'SF Mono', Monaco, ui-monospace, monospace"
-        font-size="20"
-        font-weight="500"
-        fill="#f4f4f4">
+  <!-- bottom -->
+  <line x1="64" y1="560" x2="1136" y2="560" stroke="#e8e3d7" stroke-opacity="0.16" stroke-width="0.8"/>
+  <text x="64" y="595"
+        font-family="'JetBrains Mono','SF Mono',Monaco,monospace"
+        font-size="20" font-weight="500" fill="#e8e3d7">
     amorend.top
   </text>
-
-  <text x="1120" y="595"
-        text-anchor="end"
-        font-family="'JetBrains Mono', 'SF Mono', Monaco, ui-monospace, monospace"
-        font-size="18"
-        fill="#f4f4f4"
-        opacity="0.5">
-    XMUM / Software Engineering
+  <text x="1136" y="595" text-anchor="end"
+        font-family="'JetBrains Mono','SF Mono',Monaco,monospace"
+        font-size="18" fill="#e8e3d7" opacity="0.55" letter-spacing="3">
+    THE WIND, UNCEASING — MMXXVI
   </text>
 </svg>

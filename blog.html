@@ -1,22 +1,36 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="zh-CN" data-theme="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Amorend 的博客文章归档，覆盖 AI Agent、检索系统、推荐系统、计算机网络与持续学习。">
-    <title>文章归档 - Amorend</title>
+    <meta name="description" content="Amorend 的文章归档，覆盖 AI Agent、检索系统、推荐系统、计算机网络与持续学习。">
+    <title>Writings — Amorend</title>
     <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+    <script>(function(){try{var t=localStorage.getItem('amorend-reading-theme')||'dark';document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400;1,500&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="assets/site.css">
     <script src="assets/site.js" defer></script>
+    <script src="assets/atmosphere.js" defer></script>
 </head>
 <body data-page="blog">
+    <div class="atmosphere" aria-hidden="true">
+        <div class="atmo-fog"></div>
+        <canvas class="atmo-dust"></canvas>
+        <div class="atmo-grain"></div>
+        <div class="atmo-vignette"></div>
+    </div>
+    <div class="frame-rule top" aria-hidden="true"></div>
+    <div class="frame-rule bottom" aria-hidden="true"></div>
+
     <header class="site-header">
         <a class="logo" href="index.html">Amorend</a>
         <nav class="nav-links" aria-label="主导航">
-            <a href="index.html">首页</a>
-            <a href="blog.html" aria-current="page">文章</a>
-            <a href="work.html">项目</a>
-            <a href="#contact">联系</a>
+            <a href="index.html">Index</a>
+            <a href="blog.html" aria-current="page">Writings</a>
+            <a href="work.html">Works</a>
+            <a href="#contact">Contact</a>
         </nav>
         <button class="theme-toggle" type="button" data-theme-toggle aria-label="切换明暗模式">
             <svg class="moon-icon" viewBox="0 0 24 24" aria-hidden="true">
@@ -31,26 +45,31 @@
     </header>
 
     <main class="page-main">
-        <section class="page-header" aria-labelledby="page-title">
-            <div class="page-header-inner">
-                <p class="eyebrow">Archive</p>
-                <h1 class="page-title" id="page-title">文章归档</h1>
-                <p class="page-subtitle">按时间倒序整理所有公开笔记。主题会变，但基本目标不变：把复杂问题写成可以再次使用的理解。</p>
-            </div>
+        <section class="page-header hero-enter" aria-labelledby="page-title">
+            <p class="eyebrow">Archive</p>
+            <h1 class="page-title" id="page-title">文章</h1>
+            <p class="page-subtitle">
+                一些思考和理解，希望能够帮到你。
+            </p>
+            <div class="horizon" aria-hidden="true"></div>
         </section>
 
-        <section class="listing-layout" aria-label="文章列表">
+        <section class="listing-layout" aria-label="文章列表" data-reveal>
             <aside class="listing-side">
-                <p data-blog-count>-- 篇文章</p>
+                <p data-blog-count>-- entries</p>
                 <a class="side-link" href="index.html">返回首页</a>
             </aside>
             <div class="article-list" data-blog-list>
-                <div class="loading-message" data-loading>文章加载中...</div>
+                <div class="loading-message" data-loading>加载中 — loading</div>
             </div>
         </section>
     </main>
 
     <footer class="site-footer" id="contact">
+        <div class="run-line">
+            <span>Greatness comes from character, and character isn't formed out of smart people.</span>
+            <span>MMXXVI</span>
+        </div>
         <div class="footer-inner">
             <span>Amorend © 2026</span>
             <a href="mailto:evilgenius0256@gmail.com">evilgenius0256@gmail.com</a>

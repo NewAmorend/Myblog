@@ -54,7 +54,7 @@
 
     function initTheme() {
         const themeKey = "amorend-reading-theme";
-        const saved = localStorage.getItem(themeKey) || "light";
+        const saved = localStorage.getItem(themeKey) || "dark";
         root.setAttribute("data-theme", saved);
 
         function syncLabel() {
