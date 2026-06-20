@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Amorend 的项目作品集，展示 AI Agent、医学影像、知识图谱、LLM 框架等工程实践。">
-    <title>作品 - Amorend</title>
+    <meta name="description" content="Amorend 的项目备忘，记录工程项目的背景、技术路线和复盘。">
+    <title>项目 - Amorend</title>
     <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
     <link rel="stylesheet" href="assets/site.css">
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js" defer></script>
@@ -15,8 +15,8 @@
         <a class="logo" href="index.html">Amorend</a>
         <nav class="nav-links" aria-label="主导航">
             <a href="index.html">首页</a>
-            <a href="work.html" aria-current="page">作品</a>
-            <a href="blog.html">博客</a>
+            <a href="blog.html">文章</a>
+            <a href="work.html" aria-current="page">项目</a>
             <a href="#contact">联系</a>
         </nav>
         <button class="theme-toggle" type="button" data-theme-toggle aria-label="切换明暗模式">
@@ -31,33 +31,24 @@
         <button class="menu-toggle" type="button" data-menu-toggle aria-label="打开导航" aria-expanded="false"><span></span></button>
     </header>
 
-    <button class="icon-button music-toggle" type="button" data-music-toggle aria-label="播放背景音乐">
-        <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
-            <path fill="currentColor" d="M12 3v10.55A4 4 0 1 0 14 17V7h4V3h-6Z"/>
-        </svg>
-    </button>
-    <audio id="bg-music" loop>
-        <source src="Music/在雨后醒来.mp3" type="audio/mpeg">
-    </audio>
-
     <main class="page-main">
         <section class="page-header" aria-labelledby="page-title">
             <div class="page-header-inner">
-                <p class="eyebrow">Project Archive / AI Systems / Product Engineering</p>
-                <h1 class="page-title" id="page-title" data-split>Work</h1>
+                <p class="eyebrow">Projects</p>
+                <h1 class="page-title" id="page-title">项目备忘</h1>
                 <p class="page-subtitle">
-                    这里收纳我做过或正在推进的系统项目。点击卡片可以阅读更完整的问题背景、技术路线和复盘。
+                    这里保留一些项目记录，作为博客之外的工程上下文。点击条目可以阅读更完整的问题背景、技术路线和复盘。
                 </p>
             </div>
         </section>
 
-        <section class="listing-layout" aria-label="作品列表">
+        <section class="listing-layout" aria-label="项目列表">
             <aside class="listing-side">
                 <p data-work-count>-- 个项目</p>
                 <a class="side-link" href="blog.html">查看文章</a>
             </aside>
-            <div class="work-grid" data-work-list>
-                <div class="loading-message" data-loading>作品加载中...</div>
+            <div class="work-list" data-work-list>
+                <div class="loading-message" data-loading>项目加载中...</div>
             </div>
         </section>
     </main>

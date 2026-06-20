@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Amorend 的个人网站，记录 AI 研究、工程实践、项目作品与日常灵感。">
-    <title>Amorend - AI Research & Engineering</title>
+    <meta name="description" content="Amorend 的个人博客，记录 AI Agent、工程实践、检索系统和技术阅读笔记。">
+    <title>Amorend - Blog</title>
     <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
     <link rel="stylesheet" href="assets/site.css">
     <script src="assets/site.js" defer></script>
@@ -14,8 +14,8 @@
         <a class="logo" href="index.html">Amorend</a>
         <nav class="nav-links" aria-label="主导航">
             <a href="index.html" aria-current="page">首页</a>
-            <a href="work.html">作品</a>
-            <a href="blog.html">博客</a>
+            <a href="blog.html">文章</a>
+            <a href="work.html">项目</a>
             <a href="#contact">联系</a>
         </nav>
         <button class="theme-toggle" type="button" data-theme-toggle aria-label="切换明暗模式">
@@ -30,90 +30,27 @@
         <button class="menu-toggle" type="button" data-menu-toggle aria-label="打开导航" aria-expanded="false"><span></span></button>
     </header>
 
-    <button class="icon-button music-toggle" type="button" data-music-toggle aria-label="播放背景音乐">
-        <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
-            <path fill="currentColor" d="M12 3v10.55A4 4 0 1 0 14 17V7h4V3h-6Z"/>
-        </svg>
-    </button>
-    <audio id="bg-music" loop>
-        <source src="Music/在雨后醒来.mp3" type="audio/mpeg">
-    </audio>
-
-    <main class="page-main">
-        <section class="hero" aria-labelledby="page-title">
-            <div class="hero-inner">
-                <p class="eyebrow">v_2026 / AI Research / Full Stack Engineering</p>
-                <h1 class="hero-title" id="page-title" data-split>Amorend</h1>
-                <div class="hero-grid">
-                    <p class="hero-lead">
-                        我把 <strong>AI 研究、工程系统、内容表达</strong> 放在同一个工作台上持续迭代。
-                    </p>
-                    <p class="hero-note">
-                        这里不是简历墙，而是一个滚动的研究日志：项目、文章、灵感和正在形成的判断。
-                    </p>
-                </div>
-            </div>
-            <div class="hero-footer">
-                <p class="micro-copy">Build in public / Learn in layers / Ship with taste</p>
-                <div class="scroll-cue"><span></span>Scroll</div>
-            </div>
+    <main class="site-main">
+        <section class="site-intro" aria-labelledby="page-title">
+            <p class="eyebrow">AI Agents / Retrieval / Engineering Notes</p>
+            <h1 id="page-title">把正在形成的技术判断写下来。</h1>
+            <p>
+                这里是一个偏工程向的个人博客，记录 AI Agent、检索系统、模型应用和日常阅读笔记。文章不追求热闹，尽量把问题、路径和复盘说清楚。
+            </p>
         </section>
 
-        <section class="section" aria-labelledby="studio-title">
-            <div class="section-inner home-matrix">
-                <div class="signal-panel" data-reveal>
-                    <p class="kicker">Current Focus</p>
-                    <h2 id="studio-title" data-split>Research Studio</h2>
-                    <p>
-                        我关注 AI Agent、医学视觉、多模态模型和开发者工具。每个项目都尽量留下清晰的问题、路径和复盘。
-                    </p>
-                    <a class="text-link" href="work.html">进入作品集</a>
+        <section class="section" aria-labelledby="latest-title">
+            <div class="section-heading">
+                <div>
+                    <p class="kicker">Latest</p>
+                    <h2 id="latest-title">最近文章</h2>
                 </div>
-                <div class="stat-grid">
-                    <div class="stat" data-reveal>
-                        <strong data-count="works">--</strong>
-                        <span>Projects shipped</span>
-                    </div>
-                    <div class="stat" data-reveal>
-                        <strong data-count="posts">--</strong>
-                        <span>Notes published</span>
-                    </div>
-                    <div class="stat" data-reveal>
-                        <strong>AI</strong>
-                        <span>Research direction</span>
-                    </div>
-                </div>
+                <p><span data-post-count>--</span> 篇笔记</p>
             </div>
-        </section>
-
-        <section class="section" aria-labelledby="work-title">
-            <div class="section-inner">
-                <div class="section-heading">
-                    <p class="kicker">Selected Work</p>
-                    <div>
-                        <h2 id="work-title" data-split>最近项目</h2>
-                        <p>优先展示能代表研究方向和工程能力的项目：系统、框架、平台和可视化实验。</p>
-                    </div>
-                </div>
-                <div class="card-grid two" data-home-works>
-                    <div class="loading-message" data-loading>作品加载中...</div>
-                </div>
+            <div class="post-list" data-home-posts>
+                <div class="loading-message" data-loading>文章加载中...</div>
             </div>
-        </section>
-
-        <section class="section" aria-labelledby="blog-title">
-            <div class="section-inner">
-                <div class="section-heading">
-                    <p class="kicker">Research Notes</p>
-                    <div>
-                        <h2 id="blog-title" data-split>最近文章</h2>
-                        <p>文章更像阶段性思考：把实验经验、阅读笔记和运营观察整理成可以迁移的方法。</p>
-                    </div>
-                </div>
-                <div class="card-grid" data-home-posts>
-                    <div class="loading-message" data-loading>文章加载中...</div>
-                </div>
-            </div>
+            <a class="text-link" href="blog.html">查看全部文章</a>
         </section>
     </main>
 
