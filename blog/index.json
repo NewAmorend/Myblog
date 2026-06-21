@@ -1,5 +1,13 @@
 [
   {
+    "id": "agent-context-management-offload",
+    "file": "agent-context-management-offload.md",
+    "title": "Agent 中的上下文管理：offload",
+    "date": "2026-06-21",
+    "tag": "AI-Agent",
+    "excerpt": "从执行转移和存储转移两个角度理解 offload，解释它为何能缓解长程 Agent 任务中的上下文腐烂，并梳理 tool_result 与 compaction 两类触发机制。"
+  },
+  {
     "id": "hydride-research-ranking",
     "file": "hydride-research-ranking.md",
     "title": "Hydride Research 工作原理：BM25、向量检索与 RRF 排序",
