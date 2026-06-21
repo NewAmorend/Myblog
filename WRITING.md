@@ -4,7 +4,55 @@
 
 ---
 
-## 加一篇博客文章
+## 从 Obsidian 一键发布文章（推荐）
+
+以后从 Obsidian 发文章，优先用脚本，不需要手动改 `blog/index.json` 和 `sitemap.xml`。
+
+### 只导入，不提交
+
+```bash
+node scripts/publish-obsidian-post.mjs 'obsidian://open?vault=Obsidian%20Vault&file=Agent中的上下文管理--offload'
+```
+
+脚本会自动做这些事：
+
+1. 解析 Obsidian 链接，找到 vault 里的 Markdown。
+2. 生成 `blog/<slug>.md`，补齐 frontmatter。
+3. 把 Obsidian 图片嵌入 `![[...]]` 转成网站图片，并复制到 `assets/blog/obsidian/`。
+4. 把能匹配到现有文章的 `[[内部链接]]` 转成站内文章链接。
+5. 更新 `blog/index.json`。
+6. 运行 `scripts/build-sitemap.mjs` 更新 `sitemap.xml`。
+
+### 导入并直接发布
+
+```bash
+node scripts/publish-obsidian-post.mjs 'obsidian://open?vault=Obsidian%20Vault&file=Agent中的上下文管理--offload' --publish
+```
+
+`--publish` 会在工作区干净时自动执行：
+
+1. `git pull --rebase origin <当前分支>`
+2. 导入文章并更新索引 / sitemap
+3. `git add`
+4. `git commit -m "content: 添加 <文章标题>"`
+5. `git push origin <当前分支>`
+
+常用覆盖参数：
+
+```bash
+node scripts/publish-obsidian-post.mjs 'obsidian://open?...' \
+  --tag AI-Agent \
+  --title 'Agent 中的上下文管理：offload' \
+  --id agent-context-management-offload \
+  --excerpt '从执行转移和存储转移两个角度理解 offload。' \
+  --publish
+```
+
+不确定脚本会生成什么时，先用 `--dry-run` 预览。
+
+---
+
+## 手动加一篇博客文章
 
 > 站点支持中英双语。UI 文案两套都齐了；文章正文默认中文，如果想给某篇加英文版本，见 [双语文章](#双语文章) 一节。
 
