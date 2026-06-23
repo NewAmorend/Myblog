@@ -24,6 +24,7 @@ function usage() {
   --title <title>       覆盖文章标题
   --date <YYYY-MM-DD>   覆盖发布日期，默认使用源文件修改日期
   --tag <tag>           覆盖标签，默认按标题粗略推断
+  --category <category> 覆盖分类（求职/博客/工程），默认工程
   --id <slug>           覆盖 URL slug
   --excerpt <text>      覆盖摘要，默认取正文第一段
   --vault-path <path>   指定 Obsidian vault 路径
@@ -37,7 +38,7 @@ function usage() {
 
 function parseArgs(argv) {
   const result = { source: '', options: {} };
-  const optionsWithValue = new Set(['--title', '--date', '--tag', '--id', '--excerpt', '--vault-path', '--message']);
+  const optionsWithValue = new Set(['--title', '--date', '--tag', '--category', '--id', '--excerpt', '--vault-path', '--message']);
 
   for (let index = 0; index < argv.length; index += 1) {
     const arg = argv[index];
@@ -453,6 +454,7 @@ async function main() {
   const title = options.title || parsed.data.title || titleFromFileName(sourcePath) || firstHeading(parsed.content);
   const date = options.date || parsed.data.date || dateOnly(sourceStat.mtime);
   const tag = options.tag || parsed.data.tag || inferTag(title);
+  const category = options.category || parsed.data.category || '工程';
   const id = options.id || slugify(title || basename(sourcePath, '.md'));
   const file = `${id}.md`;
   const excerpt = options.excerpt || parsed.data.excerpt || parsed.data.description || inferExcerpt(parsed.content);
@@ -463,9 +465,9 @@ async function main() {
   const embedResult = await convertObsidianEmbeds(content, sourcePath, id, options.dryRun);
   content = convertInternalLinks(embedResult.content, posts);
 
-  const frontmatter = `---\ntitle: ${title}\ndate: ${date}\ntag: ${tag}\n---\n\n`;
+  const frontmatter = `---\ntitle: ${title}\ndate: ${date}\ntag: ${tag}\ncategory: ${category}\n---\n\n`;
   const output = `${frontmatter}${content.trim()}\n`;
-  const entry = { id, file, title, date, tag, excerpt };
+  const entry = { id, file, title, date, tag, category, excerpt };
   const existingIndex = posts.findIndex((post) => post.id === id);
   const nextPosts = existingIndex === -1
     ? [entry, ...posts]

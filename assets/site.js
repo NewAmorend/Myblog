@@ -144,11 +144,58 @@
     async function renderBlog() {
         const target = qs("[data-blog-list]");
         const count = qs("[data-blog-count]");
+        const bar = qs("[data-category-bar]");
         if (!target) return;
 
         const posts = await loadPosts();
-        if (count) count.textContent = String(posts.length) + " 篇文章";
-        target.innerHTML = posts.map(postCard).join("");
+
+        const renderList = (category) => {
+            const filtered = category === "全部"
+                ? posts
+                : posts.filter((post) => (post.category || "工程") === category);
+            if (count) count.textContent = String(filtered.length) + " 篇文章";
+            target.innerHTML = filtered.length
+                ? filtered.map(postCard).join("")
+                : '<div class="loading-message">这个分类还没有文章。</div>';
+        };
+
+        if (bar) {
+            const canonical = (bar.dataset.categories || "")
+                .split(",")
+                .map((item) => item.trim())
+                .filter(Boolean);
+            const categories = ["全部", ...canonical];
+            const active = bar.dataset.active && categories.includes(bar.dataset.active)
+                ? bar.dataset.active
+                : "全部";
+
+            bar.innerHTML = categories.map((category) => {
+                const n = category === "全部"
+                    ? posts.length
+                    : posts.filter((post) => (post.category || "工程") === category).length;
+                return `
+                    <button class="cat-btn${category === active ? " is-active" : ""}" type="button" data-cat="${escapeHTML(category)}">
+                        <span class="cat-name">${escapeHTML(category)}</span>
+                        <span class="cat-count">${n}</span>
+                    </button>
+                `;
+            }).join("");
+
+            qsa("[data-cat]", bar).forEach((button) => {
+                button.addEventListener("click", () => {
+                    const category = button.dataset.cat;
+                    bar.dataset.active = category;
+                    qsa(".cat-btn", bar).forEach((node) => {
+                        node.classList.toggle("is-active", node.dataset.cat === category);
+                    });
+                    renderList(category);
+                });
+            });
+
+            renderList(active);
+        } else {
+            renderList("全部");
+        }
     }
 
     async function loadWork(workId) {

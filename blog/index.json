@@ -5,6 +5,7 @@
     "title": "Agent 中的上下文管理：offload",
     "date": "2026-06-21",
     "tag": "AI-Agent",
+    "category": "工程",
     "excerpt": "从执行转移和存储转移两个角度理解 offload，解释它为何能缓解长程 Agent 任务中的上下文腐烂，并梳理 tool_result 与 compaction 两类触发机制。"
   },
   {
@@ -13,6 +14,7 @@
     "title": "Hydride Research 工作原理：BM25、向量检索与 RRF 排序",
     "date": "2026-06-09",
     "tag": "RAG",
+    "category": "工程",
     "excerpt": "梳理关键字搜索、向量搜索和 Hybrid Search 的排序逻辑，并解释 RRF 如何统一不同检索通道的排名。"
   },
   {
@@ -21,6 +23,7 @@
     "title": "推荐系统的指标设计",
     "date": "2026-06-09",
     "tag": "Recommendation",
+    "category": "工程",
     "excerpt": "用 Accuracy@N、MRR@N 和 nDCG 三个指标理解推荐与检索系统如何评价结果命中率和排序质量。"
   },
   {
@@ -29,6 +32,7 @@
     "title": "自进化的基于对抗去噪抗干扰的 DeepResearch Agent",
     "date": "2026-06-09",
     "tag": "Research-Agent",
+    "category": "工程",
     "excerpt": "围绕 DeepResearch Agent 的研究任务挑战、整体架构和红蓝对抗式去噪机制，记录一个自进化研究代理的设计思路。"
   },
   {
@@ -37,6 +41,7 @@
     "title": "Agent 车机助手架构学习笔记",
     "date": "2026-06-02",
     "tag": "AI-Agent",
+    "category": "工程",
     "excerpt": "从音频采集、ASR、拒识模型、意图召回到 NLU 和 MCP 调用，梳理车载语音助手的核心链路。"
   },
   {
@@ -45,6 +50,7 @@
     "title": "Agent 轨迹的基本介绍",
     "date": "2026-05-22",
     "tag": "AI-Agent",
+    "category": "工程",
     "excerpt": "介绍 Agent Trajectory 的定义、基本格式、ATIF 标准、质量评估指标，以及轨迹数据在训练中的应用。"
   },
   {
@@ -53,6 +59,7 @@
     "title": "Continual Learning for AI Agents",
     "date": "2026-05-12",
     "tag": "Continual-Learning",
+    "category": "工程",
     "excerpt": "从 Model、Harness、Content 三个层面理解 AI Agent 的持续学习，并把 trace、feedback 与 skills 串成一套演化框架。"
   },
   {
@@ -61,6 +68,7 @@
     "title": "Continual Learning for AI Agents - 三个层面",
     "date": "2026-05-12",
     "tag": "Continual-Learning",
+    "category": "工程",
     "excerpt": "把持续学习拆成权重级、设施级和上下文级三个层面，比较它们的成本、频率和适用场景。"
   },
   {
@@ -69,6 +77,7 @@
     "title": "Trace + Feedback：持续学习的燃料",
     "date": "2026-05-12",
     "tag": "Continual-Learning",
+    "category": "工程",
     "excerpt": "Trace 记录发生了什么，Feedback 判断做得好不好。本文讨论二者如何共同成为 Agent 持续学习的燃料。"
   },
   {
@@ -77,6 +86,7 @@
     "title": "Skills 的产出与管理",
     "date": "2026-05-12",
     "tag": "Continual-Learning",
+    "category": "工程",
     "excerpt": "从 Trace + Feedback 到 Skills，进一步思考何时产出 Skill、如何管理已有 Skill，以及 Skill Curator 的角色。"
   },
   {
@@ -85,6 +95,7 @@
     "title": "计算机网络的基本概念",
     "date": "2026-04-22",
     "tag": "Computer-Networks",
+    "category": "工程",
     "excerpt": "从 TCP/IP 四层模型切入，解释应用层、传输层、网络层和网络接口层的职责与关键概念。"
   },
   {
@@ -93,6 +104,7 @@
     "title": "Claude Agent Harness Key Insight",
     "date": "2026-04-16",
     "tag": "Harness",
+    "category": "工程",
     "excerpt": "围绕 Claude Agent Harness 的设计哲学，讨论上下文焦虑、独立评估、多智能体分工和 prompt 措辞对输出气质的影响。"
   },
   {
@@ -101,6 +113,7 @@
     "title": "几个 Agent 常见范式的思考",
     "date": "2026-04-04",
     "tag": "AI-Agent",
+    "category": "工程",
     "excerpt": "AI Agent 正在成为人工智能领域最热门的话题之一。本文从 ReAct、Reflection、Plan-Solve 三种范式切入，梳理 Agent 的思考-执行模式。"
   }
 ]

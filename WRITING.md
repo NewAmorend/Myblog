@@ -69,6 +69,7 @@ node scripts/publish-obsidian-post.mjs 'obsidian://open?...' \
 title: 大语言模型微调实践指南
 date: 2026-01-05
 tag: LLM
+category: 工程
 ---
 
 这里写正文，支持完整 Markdown 语法。
@@ -85,6 +86,7 @@ tag: LLM
 | `title` | ✓ | 文章标题，会显示在 `<h1>`、`<title>`、og:title |
 | `date` | ✓ | `YYYY-MM-DD`，用于排序和 sitemap lastmod |
 | `tag` | ✓ | 单个 tag，无空格用 kebab-case（如 `AI-Agent`、`Computer-Vision`） |
+| `category` | ✗ | 大分类，取值 `求职` / `博客` / `工程`，默认 `工程`。决定 blog.html 顶部分类筛选条归属 |
 
 ### 2. 在 `blog/index.json` 加一条
 
@@ -97,6 +99,7 @@ tag: LLM
   "title": "大语言模型微调实践指南",
   "date": "2026-01-05",
   "tag": "LLM",
+  "category": "工程",
   "excerpt": "从数据准备到模型部署，本文详细记录大语言模型微调的完整流程。"
 }
 ```
@@ -108,6 +111,7 @@ tag: LLM
 | `id` | URL 里的 slug，用 `article.html?post=<id>` 访问；通常等于不带 `.md` 的文件名 |
 | `file` | `blog/` 下的文件名（带 `.md`） |
 | `title` / `date` / `tag` | 跟 frontmatter 保持一致 |
+| `category` | 大分类（`求职` / `博客` / `工程`），决定 blog.html 顶部分类筛选条归属，不填默认 `工程` |
 | `excerpt` | 1-3 句话的摘要，会显示在博客卡片、文章页副标题、og:description |
 
 ### 3. push 到 main
@@ -273,7 +277,7 @@ python3 -m http.server 8765
 |---|---|
 | 更新 sitemap.xml | GitHub Action 在 push 后自动重建 |
 | 给新文章加 og:title / canonical | `article.html` 的 JS 根据 `?post=` 动态注入 |
-| 把新 tag 加到 blog 筛选按钮 | blog.html 加载时从 `blog/index.json` 汇总，自动出现 |
+| 把新分类加到 blog 筛选按钮 | blog.html 的分类（求职/博客/工程）固定写在 `data-categories`，按钮上的篇数随 `blog/index.json` 自动更新 |
 | 让搜索能搜到新文章 | 搜索直接在已加载的数据上做子串匹配，自动覆盖 |
 | 把新文章加进文章列表 | blog.html 的 research-log 频道动态渲染 |
 
