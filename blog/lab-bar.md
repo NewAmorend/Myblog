@@ -26,7 +26,7 @@ tag: Notes
 ## 我们还能做什么
 > *Give up your weekends and nights. Burned into my mind is the typical workflow my college friends and I have gone through. We would start from the very morning of Saturday with two big quadruple-shot Panera iced coffees until late, then come back and do it again the following day, hoping to finish early enough to trudge back to our rooms on the other side of campus to get to sleep on time for the start of another week of psets. Rolling deadlines collapse on each other with nothing but another such weekend to look forward to.*
 
-请允许笔者大段引用原作者的表述，他的语言简直理性到残酷，笔者匮乏的语言难以描述这种近乎残忍的努力，但这是事实，如果不倾尽一切地工作，放弃休息的时间，目前还在读的大学生几乎不可能进入到顶尖的实验室中。
+请允许笔者大段引用原作者的表述，他的语言简直理性到残酷，笔者匮乏的语言难以描述这种近乎残忍的努力，如果不倾尽一切地工作，放弃休息的时间，目前还在读的大学生几乎不可能进入到顶尖的实验室中。
 
 这很残忍但是这是事实，就业市场上无数硕博“嗷嗷待哺”，如果一个本科生无法拿出有力的证据，证明他比现有的硕博更有竞争力，那么进入顶尖Lab自然就希望渺茫。并且谁也不知道AI的泡沫什么时候会突然破裂，本科生所谓的培养潜力，对企业来说不过是谎言。
 
