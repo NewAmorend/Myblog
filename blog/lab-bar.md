@@ -35,7 +35,7 @@ tag: Notes
 
 它通常处于LLM堆栈的两端：
 下端是Kernel 算子的底层优化，他是神经网路不可或缺的组成部分。
-上端是Agentic Loop，无需关注神经网络这个黑盒模型究竟发生了什么，你只在乎他具体可以产生什么有用过的结果。
+上端是Agentic Loop，无需关注神经网络这个黑盒模型究竟发生了什么，你只在乎他具体可以产生什么有用的结果。
 
 ## AI Infra
 由于笔者主要工作来自LLM下方，即Agentic Loops因此此处请参照原文建议：https://vladfeinberg.com/2026/05/10/how-to-land-a-job-at-a-frontier-lab.html
