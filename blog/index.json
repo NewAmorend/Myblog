@@ -1,5 +1,13 @@
 [
   {
+    "id": "lab-bar",
+    "file": "lab-bar.md",
+    "title": "在前沿 lab 的 bar 越来越高的时候，我们还能做什么",
+    "date": "2026-06-28",
+    "tag": "Notes",
+    "excerpt": "本文为读 https://vladfeinberg.com/博客有感而发。"
+  },
+  {
     "id": "agent-context-management-offload",
     "file": "agent-context-management-offload.md",
     "title": "Agent 中的上下文管理：offload",
@@ -7,15 +15,6 @@
     "tag": "AI-Agent",
     "category": "工程",
     "excerpt": "从执行转移和存储转移两个角度理解 offload，解释它为何能缓解长程 Agent 任务中的上下文腐烂，并梳理 tool_result 与 compaction 两类触发机制。"
-  },
-  {
-    "id": "hydride-research-ranking",
-    "file": "hydride-research-ranking.md",
-    "title": "Hydride Research 工作原理：BM25、向量检索与 RRF 排序",
-    "date": "2026-06-09",
-    "tag": "RAG",
-    "category": "工程",
-    "excerpt": "梳理关键字搜索、向量搜索和 Hybrid Search 的排序逻辑，并解释 RRF 如何统一不同检索通道的排名。"
   },
   {
     "id": "recommendation-metrics",
@@ -34,6 +33,15 @@
     "tag": "Research-Agent",
     "category": "工程",
     "excerpt": "围绕 DeepResearch Agent 的研究任务挑战、整体架构和红蓝对抗式去噪机制，记录一个自进化研究代理的设计思路。"
+  },
+  {
+    "id": "hydride-research-ranking",
+    "file": "hydride-research-ranking.md",
+    "title": "Hydride Research 工作原理：BM25、向量检索与 RRF 排序",
+    "date": "2026-06-09",
+    "tag": "RAG",
+    "category": "工程",
+    "excerpt": "梳理关键字搜索、向量搜索和 Hybrid Search 的排序逻辑，并解释 RRF 如何统一不同检索通道的排名。"
   },
   {
     "id": "agent-car-assistant",
@@ -72,15 +80,6 @@
     "excerpt": "把持续学习拆成权重级、设施级和上下文级三个层面，比较它们的成本、频率和适用场景。"
   },
   {
-    "id": "continual-learning-trace-feedback",
-    "file": "continual-learning-trace-feedback.md",
-    "title": "Trace + Feedback：持续学习的燃料",
-    "date": "2026-05-12",
-    "tag": "Continual-Learning",
-    "category": "工程",
-    "excerpt": "Trace 记录发生了什么，Feedback 判断做得好不好。本文讨论二者如何共同成为 Agent 持续学习的燃料。"
-  },
-  {
     "id": "continual-learning-skills-management",
     "file": "continual-learning-skills-management.md",
     "title": "Skills 的产出与管理",
@@ -88,6 +87,15 @@
     "tag": "Continual-Learning",
     "category": "工程",
     "excerpt": "从 Trace + Feedback 到 Skills，进一步思考何时产出 Skill、如何管理已有 Skill，以及 Skill Curator 的角色。"
+  },
+  {
+    "id": "continual-learning-trace-feedback",
+    "file": "continual-learning-trace-feedback.md",
+    "title": "Trace + Feedback：持续学习的燃料",
+    "date": "2026-05-12",
+    "tag": "Continual-Learning",
+    "category": "工程",
+    "excerpt": "Trace 记录发生了什么，Feedback 判断做得好不好。本文讨论二者如何共同成为 Agent 持续学习的燃料。"
   },
   {
     "id": "tcp-ip-basics",
