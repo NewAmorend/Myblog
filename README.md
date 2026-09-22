@@ -83,7 +83,7 @@ http://localhost:4173/
 
 ## 部署
 
-项目可直接部署到 GitHub Pages、Vercel、Netlify 等静态托管平台。Marked、DOMPurify 和 MathJax 已固定版本并随站点发布。升级时运行 `npm ci`、`npm run vendor` 和 `npm test`，检查 `assets/vendor/manifest.json` 后一并提交依赖锁文件与生成资源。开发和测试需要符合 package.json 要求的 Node.js 版本。
+公开站点由 `.github/workflows/deploy-pages.yml` 构建并只发布 `dist/`。`admin/`、`api/`、本机启动脚本与私有数据均不进入公开输出；本机后台直接读取仓库中的 `admin/`。不要把 GitHub Pages 发布来源改回仓库根目录。Marked、DOMPurify 和 MathJax 已固定版本并随站点发布。升级时运行 `npm ci`、`npm run vendor` 和 `npm test`，检查 `assets/vendor/manifest.json` 后一并提交依赖锁文件与生成资源。开发和测试需要符合 package.json 要求的 Node.js 版本。
 
 ### 写作后台部署
 
