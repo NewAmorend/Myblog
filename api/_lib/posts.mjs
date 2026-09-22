@@ -96,6 +96,7 @@ export function generateSitemap(posts, siteUrl = process.env.BLOG_SITE_URL || DE
   const urls = [
     entry(`${site}/`, today, 'weekly', '1.0'),
     entry(`${site}/blog.html`, today, 'weekly', '0.9'),
+    entry(`${site}/series.html`, today, 'weekly', '0.9'),
     ...sortPosts(posts).map((post) => entry(
       `${site}/article.html?post=${encodeURIComponent(post.id)}`,
       post.date || today,

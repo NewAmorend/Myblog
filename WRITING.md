@@ -204,11 +204,44 @@ English body...
 
 原文默认中文；英文原文请在索引顶层添加 `"language": "en"`，中文译文放在 `translations.zh`。译文文件名仅允许英文字母、数字、下划线、短横线和点，并以 `.md` 结尾。当前写作后台与导入脚本不提供译文编辑功能，译文应直接维护文件和索引，后续通过后台更新时需核对这些字段。
 
+## 组织一个系列
+
+正文与元数据仍放在 `blog/` 和 `blog/index.json`。再在 `series/index.json` 添加系列信息，例如：
+
+```json
+[
+  {
+    "id": "systems-notes",
+    "title": "系统学习笔记",
+    "description": "介绍这个系列要解决的问题、内容范围和适合的读者。",
+    "prerequisites": "读者需要具备的基础。此字段可以省略。",
+    "chapters": ["first-chapter", "second-chapter"],
+    "translations": {
+      "en": {
+        "title": "Systems Notes",
+        "description": "The scope and intended audience of this series.",
+        "prerequisites": "The background readers should have."
+      }
+    }
+  }
+]
+```
+
+- `chapters` 填写 `blog/index.json` 中的文章 `id`，数组顺序就是阅读顺序，与发布日期无关。
+- 一个系列的 `id` 必须唯一，一篇文章只能归属于一个系列，重复编排会显示内容加载错误。
+- 已归属系列的文章不再出现在独立文章列表，原来的文章链接保持有效。
+- 未发布或已下线的章节不会形成可点击链接；上线新的正文后，对应章节自动出现在目录中。正式目录建议只列已发布章节。
+- 系列元数据的译文不需要 Markdown 文件；正文译文按前文方式配置。切换语言不会离开当前系列或章节。
+- 可直接访问 `series.html?series=systems-notes`。首次发布建议把系列目录和章节一起提交，避免中间状态。
+- 当前后台仍负责单篇文章的发布，系列创建与排序直接编辑 `series/index.json`；章节归属不依赖后台表单字段，更新文章不会覆盖目录顺序。
+
 ## 阅读与导航
 
-首页展示最近五篇文章；全部文章页支持搜索标题、摘要、标签以及分类筛选。筛选条件写入 URL，进入正文后返回列表会保留条件。正文的二、三级标题自动生成目录，底部可跳转相邻文章。
+首页只展示 bio、系列与文章入口，以及 GitHub、邮箱链接；不显示文章或系列预览。内容页显示统一顶部导航。
 
-默认浅色主题，右上角按钮可切深色，语言与主题在本地保存。支持跨页 View Transitions 的浏览器会呈现短暂过渡，不支持时正常跳转；系统减少动态效果偏好会关闭动画。
+独立文章支持按标题、摘要和标签搜索，以及分类筛选。系列阅读页显示完整章节目录，突出当前章节；桌面端左侧常驻，手机端通过“系列目录”展开。本章的小节目录可在当前章节下展开。独立文章只显示本文目录和返回列表，不强加相邻文章。
+
+默认浅色黑白主题，文字按钮可切换深色。语言与主题保存在本地。页面使用普通链接，支持浏览器前进、后退和新标签页。
 
 代码块采用等宽字体和可横向滚动容器，数学公式由 MathJax 渲染。站点不自动翻译正文，也不生成虚构文章。
 
@@ -223,4 +256,4 @@ python3 -m http.server 4173 --directory dist
 
 访问 `http://localhost:4173/`。`dist` 是可重新生成的输出目录，临时排版样例不要写入正式的 `blog/`。
 
-提交到 main 后，GitHub Pages 自动部署；文章索引变化还会触发 sitemap 更新。域名使用 Cloudflare → GitHub Pages，后台 API 则需按 README 单独部署。
+提交到 main 后，GitHub Pages 自动部署；文章或系列索引变化还会触发 sitemap 更新。域名使用 Cloudflare → GitHub Pages，后台 API 则需按 README 单独部署。

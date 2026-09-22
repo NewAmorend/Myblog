@@ -28,11 +28,14 @@ async function readJson(rel) {
 
 async function main() {
   const blog = await readJson('blog/index.json');
+  const series = await readJson('series/index.json');
   const sortedBlog = [...blog].sort((a, b) => new Date(b.date) - new Date(a.date));
 
   const urls = [
     entry(`${SITE}/`, today, 'weekly', '1.0'),
     entry(`${SITE}/blog.html`, today, 'weekly', '0.9'),
+    entry(`${SITE}/series.html`, today, 'weekly', '0.9'),
+    ...series.map((item) => entry(`${SITE}/series.html?series=${encodeURIComponent(item.id)}`, today, 'weekly', '0.8')),
     ...sortedBlog.map((post) =>
       entry(
         `${SITE}/article.html?post=${encodeURIComponent(post.id)}`,

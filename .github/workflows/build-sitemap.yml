@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - 'blog/index.json'
+      - 'series/index.json'
       - 'scripts/build-sitemap.mjs'
       - '.github/workflows/build-sitemap.yml'
   workflow_dispatch:

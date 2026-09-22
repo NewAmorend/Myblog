@@ -1,8 +1,8 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Amorend 博客">
-  <rect width="64" height="64" rx="14" fill="#246348"/>
-  <g fill="none" stroke="#fafbf9" stroke-width="7" stroke-linecap="round">
+  <rect width="64" height="64" rx="14" fill="#202020"/>
+  <g fill="none" stroke="#ffffff" stroke-width="7" stroke-linecap="round">
     <circle cx="26" cy="34" r="11"/>
     <path d="M37 23v22"/>
   </g>
-  <circle cx="49" cy="45" r="4" fill="#fafbf9"/>
+  <circle cx="49" cy="45" r="4" fill="#ffffff"/>
 </svg>
