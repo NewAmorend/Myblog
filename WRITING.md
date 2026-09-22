@@ -4,7 +4,29 @@
 
 ---
 
-## 从 Obsidian 一键发布文章（推荐）
+## 在写作后台发布（最省事）
+
+部署配置完成后，直接打开：
+
+```text
+https://amorend.top/admin/
+```
+
+推荐流程：
+
+1. 点击“新建文章”，填写标题、标签、分类和摘要。
+2. 在 Markdown 编辑器写正文；可以切换“分栏”或“预览”，图片可直接上传并插入。
+3. 随时点击“保存草稿”（或按 `⌘/Ctrl + S`）。草稿保存在私有 Redis，不进入公开 Git 仓库。
+4. 点击“发布”。后台会一次性提交 Markdown、`blog/index.json` 和 `sitemap.xml`，成功后清理私有存储中的对应草稿版本。
+5. Vercel/GitHub 收到提交后自动重新部署，通常几十秒内生效。
+
+编辑已发布文章时，后台先保存一份未发布修改；再次点击“更新发布”才会覆盖线上文章。“下线文章”会从公开索引和仓库当前版本中删除正文，但 Git 历史仍然可以恢复。
+
+后台环境变量与首次部署步骤见 [README.md](README.md#写作后台部署)。
+
+---
+
+## 从 Obsidian 一键导入文章
 
 以后从 Obsidian 发文章，优先用脚本，不需要手动改 `blog/index.json` 和 `sitemap.xml`。
 
@@ -337,7 +359,7 @@ git push main
          └─► 几十秒后 amorend.top 更新
 ```
 
-域名走 Cloudflare → GitHub Pages，HTTPS 由 Cloudflare 提供。Cloudflare SSL 模式建议保持 **Full**。
+域名走 Cloudflare → GitHub Pages，HTTPS 由 Cloudflare 提供。核实源站证书后使用 **Full (strict)**，并启用 **Always Use HTTPS**；验证跳转正确后再启用 HSTS。
 
 ---
 

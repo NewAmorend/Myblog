@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' https: data:; media-src 'self'; connect-src 'self' https://cloudflareinsights.com; frame-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; upgrade-insecure-requests">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex,nofollow,noarchive">
+  <meta name="color-scheme" content="dark light">
+  <title>写作后台 — Amorend</title>
+  <link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/admin/admin.css">
+  <script src="/assets/vendor/marked.js" defer></script>
+  <script src="/assets/vendor/purify.min.js" defer></script>
+  <script src="/assets/markdown.js" defer></script>
+  <script src="/admin/admin.js" defer></script>
+</head>
+<body>
+  <main class="login-view" data-login-view>
+    <section class="login-card" aria-labelledby="login-title">
+      <a class="brand" href="../index.html">Amorend</a>
+      <p class="eyebrow">Private workspace</p>
+      <h1 id="login-title">回来写点东西。</h1>
+      <p class="login-copy">草稿私密保存，确认发布后才会出现在博客中。</p>
+      <form class="login-form" data-login-form method="post" action="/api/admin/login">
+        <label for="admin-password">后台密码</label>
+        <div class="password-row">
+          <input id="admin-password" name="password" type="password" autocomplete="current-password" required autofocus>
+          <button class="button primary" type="submit" disabled>进入</button>
+        </div>
+        <p class="form-error" data-login-error role="alert"></p>
+      </form>
+      <p class="login-footnote">会话将在 8 小时后失效，密码不会写入浏览器存储。</p>
+    </section>
+  </main>
+
+  <div class="admin-shell" data-app-view hidden>
+    <aside class="sidebar">
+      <header class="sidebar-header">
+        <div>
+          <a class="brand" href="../index.html">Amorend</a>
+          <p data-repository>Content desk</p>
+        </div>
+        <button class="icon-button" type="button" data-logout title="退出登录" aria-label="退出登录">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 17l5-5-5-5M15 12H3M14 3h5a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-5"/></svg>
+        </button>
+      </header>
+
+      <button class="new-post" type="button" data-new-post>
+        <span>新建文章</span><span aria-hidden="true">＋</span>
+      </button>
+
+      <label class="search-box">
+        <span class="sr-only">搜索文章</span>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg>
+        <input type="search" placeholder="搜索标题、标签…" data-search>
+      </label>
+
+      <div class="list-meta">
+        <span data-post-count>0 篇内容</span>
+        <span class="sync-state"><i></i> Git 同步</span>
+      </div>
+      <nav class="post-list" data-post-list aria-label="文章列表"></nav>
+    </aside>
+
+    <button class="sidebar-scrim" type="button" data-sidebar-scrim aria-label="关闭文章列表"></button>
+
+    <main class="workspace">
+      <header class="workspace-topbar">
+        <button class="mobile-sidebar-button" type="button" data-sidebar-toggle aria-label="打开文章列表">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+        </button>
+        <p><span class="connection-dot"></span> Repository connected</p>
+        <a href="../blog.html" target="_blank" rel="noopener">查看博客 ↗</a>
+      </header>
+
+      <section class="empty-state" data-editor-empty>
+        <div class="empty-mark">A</div>
+        <p class="eyebrow">Writing room</p>
+        <h1>选一篇文章，或者从空白开始。</h1>
+        <p>草稿保存在私有存储中；点击发布后，才会进入公开文章列表。</p>
+        <button class="button primary" type="button" data-empty-new>写新文章</button>
+      </section>
+
+      <section class="editor" data-editor hidden>
+        <form data-editor-form>
+          <header class="editor-header">
+            <div>
+              <p class="eyebrow">Current document</p>
+              <div class="document-state">
+                <span class="status-pill" data-status>草稿</span>
+                <span data-save-state>所有更改已保存</span>
+              </div>
+            </div>
+            <div class="editor-actions">
+              <a class="button ghost" data-live-link href="#" target="_blank" rel="noopener" hidden>线上页面 ↗</a>
+              <button class="button ghost" type="button" data-save>保存草稿</button>
+              <button class="button primary" type="button" data-publish>发布</button>
+            </div>
+          </header>
+
+          <div class="editor-scroll">
+            <div class="title-row">
+              <label class="title-field">
+                <span class="sr-only">文章标题</span>
+                <textarea name="title" rows="1" maxlength="160" placeholder="文章标题" required data-title></textarea>
+              </label>
+              <div class="mode-switch" role="group" aria-label="编辑视图">
+                <button type="button" class="is-active" data-mode="write">写作</button>
+                <button type="button" data-mode="split">分栏</button>
+                <button type="button" data-mode="preview">预览</button>
+              </div>
+            </div>
+
+            <div class="metadata-grid">
+              <label>
+                <span>文章 ID</span>
+                <input name="id" maxlength="80" pattern="[a-z0-9]+(?:-[a-z0-9]+)*" placeholder="my-new-post" required data-id>
+              </label>
+              <label>
+                <span>发布日期</span>
+                <input name="date" type="date" required>
+              </label>
+              <label>
+                <span>标签</span>
+                <input name="tag" maxlength="60" placeholder="AI-Agent" required>
+              </label>
+              <label>
+                <span>分类</span>
+                <select name="category">
+                  <option value="工程">工程</option>
+                  <option value="博客">博客</option>
+                  <option value="求职">求职</option>
+                </select>
+              </label>
+            </div>
+
+            <label class="excerpt-field">
+              <span>摘要 <small>显示在博客列表与分享卡片中</small></span>
+              <textarea name="excerpt" rows="2" maxlength="500" placeholder="用一两句话说清楚这篇文章解决什么问题。"></textarea>
+            </label>
+
+            <div class="writing-toolbar">
+              <div>
+                <button type="button" data-insert="**粗体**" title="粗体"><strong>B</strong></button>
+                <button type="button" data-insert="_斜体_" title="斜体"><em>I</em></button>
+                <button type="button" data-prefix="## " title="二级标题">H2</button>
+                <button type="button" data-prefix="&gt; " title="引用">“</button>
+                <button type="button" data-insert="[链接文字](https://)" title="链接">↗</button>
+                <button type="button" data-prefix="- " title="列表">≡</button>
+                <button type="button" data-insert="&#10;```text&#10;代码&#10;```&#10;" title="代码块">&lt;/&gt;</button>
+              </div>
+              <div>
+                <button type="button" data-upload-button>上传图片</button>
+                <input type="file" accept="image/png,image/jpeg,image/gif,image/webp,image/avif" data-image-input hidden>
+                <span data-word-count>0 字</span>
+              </div>
+            </div>
+
+            <div class="writing-grid" data-writing-grid data-view="write">
+              <label class="content-field">
+                <span class="sr-only">Markdown 正文</span>
+                <textarea name="content" spellcheck="true" placeholder="从这里开始。支持 Markdown、代码块、表格与数学公式…" data-content></textarea>
+              </label>
+              <section class="preview-pane" aria-label="文章预览">
+                <iframe sandbox="" title="Markdown 预览" data-preview></iframe>
+              </section>
+            </div>
+
+            <footer class="danger-zone">
+              <div>
+                <strong>内容操作</strong>
+                <p>删除和下线会产生 Git 提交，仍可从仓库历史中恢复。</p>
+              </div>
+              <div>
+                <button class="text-danger" type="button" data-delete-draft hidden>删除草稿</button>
+                <button class="text-danger" type="button" data-unpublish hidden>下线文章</button>
+              </div>
+            </footer>
+          </div>
+        </form>
+      </section>
+    </main>
+  </div>
+
+  <div class="toast" data-toast role="status" aria-live="polite" hidden></div>
+  <div class="busy-overlay" data-busy hidden><span></span><p>正在保存更改…</p></div>
+</body>
+</html>

@@ -207,7 +207,7 @@
 
         const markdown = await fetchText("work/" + work.file);
         const parsed = parseFrontmatter(markdown);
-        const htmlContent = window.marked ? marked.parse(parsed.content || "") : "<pre>" + escapeHTML(parsed.content || "") + "</pre>";
+        const htmlContent = window.renderSafeMarkdown ? window.renderSafeMarkdown(parsed.content) : "<pre>" + escapeHTML(parsed.content || "") + "</pre>";
         const result = { ...work, ...parsed, htmlContent };
         state.workCache[workId] = result;
         return result;
@@ -327,7 +327,7 @@
         const markdown = await fetchText("blog/" + post.file);
         const parsed = parseFrontmatter(markdown);
         const article = { ...post, ...parsed };
-        const htmlContent = window.marked ? marked.parse(article.content || "") : "<pre>" + escapeHTML(article.content || "") + "</pre>";
+        const htmlContent = window.renderSafeMarkdown ? window.renderSafeMarkdown(article.content) : "<pre>" + escapeHTML(article.content || "") + "</pre>";
 
         document.title = article.title + " - Amorend";
         articleRoot.innerHTML = `

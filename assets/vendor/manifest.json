@@ -1,0 +1,16 @@
+{
+  "dependencies": {
+    "dompurify": "3.4.15",
+    "marked": "18.0.14",
+    "mathjax": "3.2.2"
+  },
+  "sha256": {
+    "assets/vendor/marked.js": "21568877a938d2c4e7d74e27f18e60da96bb73a68809610ca39216e1efebae62",
+    "assets/vendor/marked.LICENSE.md": "8e3a3f82f59a60958f56ca08f445647c32a4733dc7ca6c2c46f6eb898471ab9c",
+    "assets/vendor/purify.min.js": "f263b05369e050fa175d4ecb9c9358eb4253602d510297adfb31df48b2f1c4d5",
+    "assets/vendor/dompurify.LICENSE": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30",
+    "assets/vendor/mathjax/tex-svg-full.js": "a4354ff94fd868aea0cc6eaaa79a57fda0588646fc46ee3700a349ee0a11cbe6",
+    "assets/vendor/mathjax/ui/safe.js": "9fef48d868277a8bc1852f7ba796b33ead812d38916a7131b0a29ea48961a6a4",
+    "assets/vendor/mathjax/LICENSE": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+  }
+}

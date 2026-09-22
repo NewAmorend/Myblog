@@ -1,0 +1,8 @@
+.env*
+!.env.example
+.blog-admin/
+.git/
+tests/
+SECURITY_REVIEW.md
+node_modules/
+dist/

@@ -12,3 +12,11 @@ Thumbs.db
 *.log
 .env
 .env.local
+.vercel
+
+# 依赖、旧版私有数据与环境配置
+node_modules/
+.env.*
+!.env.example
+.blog-admin/
+dist/
