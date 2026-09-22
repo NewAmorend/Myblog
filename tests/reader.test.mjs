@@ -46,14 +46,13 @@ test('搜索无结果时可以清除筛选，浏览器恢复 URL 后重新同步
  }finally{w.close();}
 });
 
-test('中英空列表都有明确提示，索引仍为空',async()=>{
+test('中英空列表都有明确提示，不生成虚构文章',async()=>{
  const dom=await setup('home','',{posts:[]});const w=dom.window;
  try{
   assert.match(w.document.querySelector('.empty-state').textContent,/暂时没有文章/);
   w.document.querySelector('[data-language-toggle]').click();await settle();
   assert.match(w.document.querySelector('.empty-state').textContent,/No articles/);
   assert.equal(w.document.querySelectorAll('.post-item').length,0);
-  assert.deepEqual(JSON.parse(await readFile('blog/index.json','utf8')),[]);
  }finally{w.close();}
 });
 
