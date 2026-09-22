@@ -1,42 +1,25 @@
-# Amorend 个人网站
+# Amorend 个人博客
 
-一个面向 AI 研究、工程项目和博客写作的静态个人网站。新版将页面结构、黑白灰蓝视觉系统和轻量交互逻辑集中到共享资源中，保持纯静态部署，同时降低后续维护成本。
+以阅读为中心的静态博客，记录 AI、工程实践与学习笔记。前台采用原生 HTML、CSS 和 JavaScript。
 
-## 文件结构
+## 页面与资源
 
-```text
-Myblog/
-├── index.html          # 首页：个人定位、项目预览、文章预览
-├── admin/              # 私有写作后台界面
-├── api/admin/          # Vercel Functions：鉴权与内容管理 API
-├── work.html           # 作品列表页：动态读取 work/index.json，支持作品详情弹窗
-├── blog.html           # 博客列表页：动态读取 blog/index.json
-├── article.html        # 文章详情页：根据 ?post=xxx 加载 Markdown
-├── assets/
-│   ├── site.css        # 共享视觉系统、响应式布局、组件样式
-│   └── site.js         # 数据加载、主题、菜单、轻量入场动画、弹窗
-├── blog/               # 博客 Markdown 与索引
-├── work/               # 作品 Markdown 与索引
-└── Music/              # 背景音乐资源
-```
-
-## 技术栈
-
-- GSAP 3：标题和内容块的 transform/opacity 入场动画
-- IntersectionObserver：轻量触发一次性入场动画，减少滚动时的计算压力
-- marked：将 Markdown 渲染为文章或作品详情
-- 原生 HTML/CSS/JavaScript：无构建步骤，可直接静态部署
+- `index.html`：博客介绍、最近文章和主题概览。
+- `blog.html`：全部文章、搜索和分类筛选。
+- `article.html`：Markdown 正文、目录、相邻文章与返回列表。
+- `assets/site.css`：浅色与深色阅读主题、响应式排版和页面过渡。
+- `assets/site.js`：内容加载、筛选与导航。
+- `i18n.js`：中英界面字典与语言切换。
+- `blog/`：正文和元数据索引；当前文章列表为空。
+- `admin/`、`api/admin/`：写作后台和管理接口，需单独配置部署。
 
 ## 核心体验
 
-- 首页不再跳转，而是作为真正的第一屏入口。
-- 博客、作品、文章页共用同一套导航、主题和黑白灰蓝组件系统。
-- 高级感来自独立背景动效、区块内部几何装饰、卡片细节和一次性入场动画；滚动仍保持浏览器原生机制。
-- 背景动画由少量固定几何元素和 GSAP transform/opacity timeline 组成，不读取滚动位置。
-- 背景不再使用 Canvas、固定视口几何层或连续滚动动画，优先保证滚动流畅度。
-- 作品详情通过弹窗展示，背景滚动会被锁定，关闭后恢复原滚动位置。
-- 支持明暗主题，并记住用户选择。
-- 动画遵守 `prefers-reduced-motion`，减少动效偏好用户会得到更轻的体验。
+- 默认浅色底、深色正文、绿色强调色；正文限制行宽，手机端自动调整布局。
+- 顶部按钮切换中英文界面，语言和主题会记住并跨页保留。正文只使用作者提供的译文，缺少译文时展示原文并提示。
+- 首页 → 全部文章 → 阅读页采用真实链接；返回列表保留搜索和分类条件，支持浏览器前进、后退和新标签页。
+- 支持同源跨页 View Transitions 的浏览器使用短暂过渡，其余浏览器正常跳转；减少动态效果偏好会禁用过渡。
+- Markdown 由本地 Marked 解析并经 DOMPurify 净化，数学公式使用本地 MathJax。
 
 ## 本地运行
 
@@ -50,7 +33,7 @@ python3 -m http.server 4173
 http://localhost:4173/
 ```
 
-不要直接用文件协议打开页面，因为博客、作品和文章内容依赖 `fetch()` 读取本地 JSON/Markdown 文件。
+不要直接用文件协议打开页面，因为博客列表和文章内容依赖 `fetch()` 读取本地 JSON/Markdown 文件。
 
 ## 添加博客文章
 
@@ -76,23 +59,7 @@ http://localhost:4173/
 
 3. 访问 `article.html?post=your-post-id` 检查渲染效果。
 
-## 添加作品项目
-
-1. 在 `work/` 下新增 Markdown 文件。
-2. 在 `work/index.json` 中添加对应条目：
-
-```json
-{
-  "id": "your-work-id",
-  "file": "your-work.md",
-  "title": "项目标题",
-  "code": "#2026-001",
-  "tags": ["AI", "Web"],
-  "description": "项目简介"
-}
-```
-
-3. 打开 `work.html`，点击对应作品卡片检查详情弹窗。
+双语正文的文件格式与发布步骤见 [WRITING.md](WRITING.md#双语文章)。
 
 ## 部署
 

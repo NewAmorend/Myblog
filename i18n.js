@@ -1,274 +1,39 @@
-// 多语言：URL ?lang=en > localStorage > navigator.language > 默认 zh
 (function () {
-  const STORAGE_KEY = 'amorend.lang';
-  const SUPPORTED = ['zh', 'en'];
-
-  const dict = {
+  const messages = {
     zh: {
-      'nav.home': '首页',
-      'nav.works': '作品',
-      'nav.blog': '博客',
-      'nav.contact': '联系',
-      'nav.channel.research': '研究',
-      'nav.channel.photo': '摄影',
-      'nav.channel.music': '音乐',
-      'nav.channel.social': '社交',
-      'nav.channel.archive': '灵感',
-      'lang.toggle.title.toEN': 'Switch to English',
-      'lang.toggle.title.toZH': '切换到中文',
-      'theme.toggle.toDark': '切换到深色模式',
-      'theme.toggle.toLight': '切换到亮色模式',
-      'music.toggle.title': '播放/暂停音乐',
-
-      // blog hero
-      'blog.title': 'Blog',
-      'blog.eyebrow': 'v_2026 / Research Notes / Built by Amorend',
-      'blog.lead': '把 AI、工程实践、研究笔记 调成一根可被滚动拨动的弦。',
-      'blog.note': '每个版块是一段信号：文章、影像、音乐、社交和灵感，会在这里汇合。',
-      'blog.microCopy': 'Concentrate / Keep Scrolling / Let the notes unfold',
-      'blog.scrollCue': 'Scroll',
-      'blog.loading': '内容频道加载中...',
-      'blog.footer.copy': 'Amorend © 2026',
-
-      // channels
-      'channel.research.kicker': 'Channel / Research',
-      'channel.research.title': '研究手记',
-      'channel.research.date': 'AI / CV / LLM',
-      'channel.research.excerpt': '记录我在 AI Agent、计算机视觉、大语言模型和医学影像方向里的问题意识、实验路径和阶段性判断。',
-
-      'channel.photo.kicker': 'Channel / Photography',
-      'channel.photo.title': '摄影集',
-      'channel.photo.date': 'Frames / Daily Life',
-      'channel.photo.excerpt': '放一些生活里的构图、光线和瞬间。它不一定服务于技术，但会保存我观察世界的方式。',
-      'channel.photo.action': 'Coming Soon',
-
-      'channel.music.kicker': 'Channel / Music',
-      'channel.music.title': '正在听',
-      'channel.music.date': 'Loop / 在雨后醒来',
-      'channel.music.excerpt': '音乐是我切换状态的开关。这里会放最近循环、写代码时的歌单，以及一些和情绪有关的片段。',
-      'channel.music.action': 'Play Music',
-
-      'channel.social.kicker': 'Channel / Social',
-      'channel.social.title': '社交媒体',
-      'channel.social.date': 'Connect / Share',
-      'channel.social.excerpt': '以后这里会汇总我在不同平台的输出：研究动态、项目进展、自媒体观察，以及一些短想法。',
-      'channel.social.action': 'Contact Me',
-
-      'channel.archive.kicker': 'Channel / Archive',
-      'channel.archive.title': '灵感档案',
-      'channel.archive.date': 'Notes / References',
-      'channel.archive.excerpt': '把暂时还没有长成文章的想法放在这里：一句话、一个问题、一张图、一次对话，先存档再发酵。',
-      'channel.archive.action': 'Read Notes',
-
-      // filters
-      'filters.search.placeholder': '搜索标题、tag、摘要…',
-      'filters.search.aria': '搜索文章',
-      'filters.tags.aria': '按 tag 筛选',
-      'filters.count': '{n} / {m} 篇',
-      'filters.empty.loading': '文章加载中...',
-      'filters.empty.none': '暂无文章。',
-      'filters.empty.noMatch': '没有匹配的文章。',
-      'filters.empty.error': '文章列表加载失败。',
-
-      // article
-      'article.title.default': '文章 - Amorend',
-      'article.notFound.title': '文章不存在 - Amorend',
-      'article.notFound.h1': '文章不存在',
-      'article.notFound.body': '这个文章 ID 没有出现在博客索引里，回到博客列表重新选择一篇吧。',
-      'article.backToBlog': '返回博客',
-      'article.readingLabel': 'Reading',
-      'article.prev': 'Previous Signal',
-      'article.next': 'Next Signal',
-      'article.loadFail.title': '加载失败',
-      'article.loadFail.body': '内容加载失败，请刷新页面重试。',
-      'article.translationMissing': '本文暂无 English 版本，下面显示中文原文。',
-
-      // work
-      'work.title': 'ALL WORKS',
-      'work.subtitle': '探索我的项目世界',
-      'work.loading': '作品加载中...',
-      'work.empty': '暂无作品',
-      'work.modal.loading.title': '加载中...',
-      'work.modal.loading.body': '内容加载中...',
-      'work.modal.fail.title': '加载失败',
-      'work.modal.fail.body': '内容加载失败，请刷新页面重试。',
+      skip:'跳到正文',journal:'个人博客',navigation:'主导航',home:'首页',articles:'文章',contact:'联系我 ↗',footer:'记录、理解，然后分享。',
+      eyebrow:'学习 · 实践 · 记录',introTitle:'写下来，想清楚。',introDescription:'你好，我是 Amorend。在这里记录 AI、工程实践，以及值得慢慢想清楚的问题。',browse:'浏览全部文章',latest:'最近更新',aboutLabel:'关于这里',aboutTitle:'一个持续更新的笔记本。',aboutDescription:'整理学习中的疑问，记录实践中的发现。希望这些笔记，也能成为你的参考。',engineering:'工程实践',notes:'学习笔记',discuss:'欢迎交流 ↗',
+      allArticles:'全部文章',archiveDescription:'按主题浏览，或搜索你感兴趣的内容。',breadcrumbs:'面包屑',articleList:'文章列表',categories:'文章分类',search:'搜索文章',searchPlaceholder:'搜索标题、摘要或标签',all:'全部',career:'求职',blog:'博客',engineeringCategory:'工程',count:'{n} 篇文章',loading:'正在加载文章…',emptyTitle:'新的篇章，正在准备。',emptyBody:'这里暂时没有文章。整理好新的想法后，会在这里与你分享。',noMatch:'没有找到匹配的文章',noMatchBody:'试试其他关键词，或清除筛选条件。',reset:'清除筛选',errorTitle:'暂时无法加载',errorBody:'请检查网络连接，然后重试。',retry:'重新加载',notFound:'文章不存在',notFoundBody:'这篇文章可能已移除，或链接有误。你可以返回列表浏览其他内容。',back:'返回文章列表',toc:'本文目录',previous:'上一篇',next:'下一篇',adjacent:'相邻文章',readingTime:'约 {n} 分钟阅读',original:'当前显示{language}原文，尚无中文译文。',languageZh:'中文',languageEn:'英文',dark:'切换到深色模式',light:'切换到浅色模式',homeTitle:'Amorend · 个人博客',blogTitle:'文章 · Amorend',articleTitle:'阅读 · Amorend',description:'Amorend 的个人博客，记录 AI、工程实践与学习笔记。'
     },
-
     en: {
-      'nav.home': 'Home',
-      'nav.works': 'Works',
-      'nav.blog': 'Blog',
-      'nav.contact': 'Contact',
-      'nav.channel.research': 'Research',
-      'nav.channel.photo': 'Frames',
-      'nav.channel.music': 'Music',
-      'nav.channel.social': 'Social',
-      'nav.channel.archive': 'Archive',
-      'lang.toggle.title.toEN': 'Switch to English',
-      'lang.toggle.title.toZH': '切换到中文',
-      'theme.toggle.toDark': 'Switch to dark mode',
-      'theme.toggle.toLight': 'Switch to light mode',
-      'music.toggle.title': 'Play / Pause music',
-
-      // blog hero
-      'blog.title': 'Blog',
-      'blog.eyebrow': 'v_2026 / Research Notes / Built by Amorend',
-      'blog.lead': 'Tuning AI, engineering practice, and research notes into a string you can pluck by scrolling.',
-      'blog.note': 'Each section is a signal — articles, frames, music, social, and inspiration converge here.',
-      'blog.microCopy': 'Concentrate / Keep Scrolling / Let the notes unfold',
-      'blog.scrollCue': 'Scroll',
-      'blog.loading': 'Loading channels...',
-      'blog.footer.copy': 'Amorend © 2026',
-
-      // channels
-      'channel.research.kicker': 'Channel / Research',
-      'channel.research.title': 'Research Notes',
-      'channel.research.date': 'AI / CV / LLM',
-      'channel.research.excerpt': 'My questions, experiments, and provisional conclusions across AI Agents, computer vision, large language models, and medical imaging.',
-
-      'channel.photo.kicker': 'Channel / Photography',
-      'channel.photo.title': 'Frames',
-      'channel.photo.date': 'Frames / Daily Life',
-      'channel.photo.excerpt': 'Composition, light, and moments from daily life. Not always technical — just the way I see the world.',
-      'channel.photo.action': 'Coming Soon',
-
-      'channel.music.kicker': 'Channel / Music',
-      'channel.music.title': 'Now Playing',
-      'channel.music.date': 'Loop / 在雨后醒来',
-      'channel.music.excerpt': 'Music is how I switch states. Recent loops, coding playlists, and emotional fragments live here.',
-      'channel.music.action': 'Play Music',
-
-      'channel.social.kicker': 'Channel / Social',
-      'channel.social.title': 'Social',
-      'channel.social.date': 'Connect / Share',
-      'channel.social.excerpt': 'Eventually a digest of what I post elsewhere: research updates, project notes, media observations, and quick thoughts.',
-      'channel.social.action': 'Contact Me',
-
-      'channel.archive.kicker': 'Channel / Archive',
-      'channel.archive.title': 'Inspiration Archive',
-      'channel.archive.date': 'Notes / References',
-      'channel.archive.excerpt': 'Ideas that haven\'t grown into articles yet — a sentence, a question, an image, a conversation. Archived first, fermented later.',
-      'channel.archive.action': 'Read Notes',
-
-      // filters
-      'filters.search.placeholder': 'Search title, tag, excerpt…',
-      'filters.search.aria': 'Search articles',
-      'filters.tags.aria': 'Filter by tag',
-      'filters.count': '{n} of {m} posts',
-      'filters.empty.loading': 'Loading articles...',
-      'filters.empty.none': 'No articles yet.',
-      'filters.empty.noMatch': 'No matching articles.',
-      'filters.empty.error': 'Failed to load articles.',
-
-      // article
-      'article.title.default': 'Article - Amorend',
-      'article.notFound.title': 'Article not found - Amorend',
-      'article.notFound.h1': 'Article not found',
-      'article.notFound.body': 'This article ID is not in the blog index. Head back and pick another one.',
-      'article.backToBlog': 'Back to Blog',
-      'article.readingLabel': 'Reading',
-      'article.prev': 'Previous Signal',
-      'article.next': 'Next Signal',
-      'article.loadFail.title': 'Load failed',
-      'article.loadFail.body': 'Failed to load content. Please refresh and try again.',
-      'article.translationMissing': 'This post has no English version yet — showing the Chinese original below.',
-
-      // work
-      'work.title': 'ALL WORKS',
-      'work.subtitle': 'Explore my project universe',
-      'work.loading': 'Loading works...',
-      'work.empty': 'No works yet',
-      'work.modal.loading.title': 'Loading...',
-      'work.modal.loading.body': 'Loading content...',
-      'work.modal.fail.title': 'Load failed',
-      'work.modal.fail.body': 'Failed to load content. Please refresh and try again.',
-    },
-  };
-
-  function detectLang() {
-    const params = new URLSearchParams(location.search);
-    const urlLang = params.get('lang');
-    if (urlLang && SUPPORTED.includes(urlLang)) return urlLang;
-    try {
-      const stored = localStorage.getItem(STORAGE_KEY);
-      if (stored && SUPPORTED.includes(stored)) return stored;
-    } catch (e) { /* localStorage may be unavailable */ }
-    const navLang = (navigator.language || '').toLowerCase();
-    if (navLang.startsWith('en')) return 'en';
-    return 'zh';
-  }
-
-  let currentLang = detectLang();
-  document.documentElement.setAttribute('lang', currentLang === 'zh' ? 'zh-CN' : 'en');
-
-  function t(key, vars) {
-    let str = (dict[currentLang] && dict[currentLang][key]) || (dict.zh && dict.zh[key]) || key;
-    if (vars) {
-      Object.keys(vars).forEach((k) => {
-        str = str.replace(new RegExp('\\{' + k + '\\}', 'g'), vars[k]);
-      });
+      skip:'Skip to content',journal:'A personal blog',navigation:'Main navigation',home:'Home',articles:'Articles',contact:'Get in touch ↗',footer:'Write, understand, share.',
+      eyebrow:'LEARN · BUILD · WRITE',introTitle:'Make room for clear thinking.',introDescription:'Hi, I’m Amorend. Notes on AI, engineering, and questions worth thinking through.',browse:'Explore all articles',latest:'Latest writing',aboutLabel:'ABOUT THIS SPACE',aboutTitle:'A notebook, always in progress.',aboutDescription:'Questions from learning. Discoveries from building. Notes that might be useful for your own work, too.',engineering:'Engineering',notes:'Learning notes',discuss:'Let’s talk ↗',
+      allArticles:'All articles',archiveDescription:'Browse by topic, or search for something on your mind.',breadcrumbs:'Breadcrumbs',articleList:'Article list',categories:'Article categories',search:'Search articles',searchPlaceholder:'Search titles, summaries, or tags',all:'All',career:'Career',blog:'Notes',engineeringCategory:'Engineering',count:'{n} articles',loading:'Loading articles…',emptyTitle:'A new chapter is on its way.',emptyBody:'No articles here just yet. New thoughts and notes will find a home here soon.',noMatch:'No matching articles',noMatchBody:'Try another keyword, or clear your filters.',reset:'Clear filters',errorTitle:'Unable to load right now',errorBody:'Check your connection and try again.',retry:'Try again',notFound:'Article not found',notFoundBody:'This article may have been removed, or the link is incorrect. Browse the archive for other articles.',back:'Back to all articles',toc:'On this page',previous:'Previous article',next:'Next article',adjacent:'More articles',readingTime:'{n} min read',original:'Showing the original in {language}. An English translation is not available yet.',languageZh:'Chinese',languageEn:'English',dark:'Switch to dark mode',light:'Switch to light mode',homeTitle:'Amorend · A personal blog',blogTitle:'Articles · Amorend',articleTitle:'Reading · Amorend',description:'A personal blog by Amorend. Notes on AI, engineering, and learning.'
     }
-    return str;
-  }
-
-  function applyDataI18n(root) {
-    (root || document).querySelectorAll('[data-i18n]').forEach((el) => {
-      el.textContent = t(el.dataset.i18n);
-    });
-    (root || document).querySelectorAll('[data-i18n-attr]').forEach((el) => {
-      // format: "attr1:key1; attr2:key2"
-      el.dataset.i18nAttr.split(';').forEach((pair) => {
-        const [attr, key] = pair.split(':').map((s) => s.trim());
-        if (attr && key) el.setAttribute(attr, t(key));
-      });
-    });
-  }
-
+  };
+  let lang = document.documentElement.lang === 'en' ? 'en' : 'zh';
   const listeners = new Set();
-  function onLangChange(fn) { listeners.add(fn); }
-
-  function setLang(lang) {
-    if (!SUPPORTED.includes(lang) || lang === currentLang) return;
-    currentLang = lang;
-    document.documentElement.setAttribute('lang', lang === 'zh' ? 'zh-CN' : 'en');
-    try { localStorage.setItem(STORAGE_KEY, lang); } catch (e) {}
-    // 更新 URL（不刷新页面）
-    const url = new URL(location.href);
-    if (lang === 'zh') {
-      url.searchParams.delete('lang');
-    } else {
-      url.searchParams.set('lang', lang);
-    }
-    history.replaceState(null, '', url.toString());
-    applyDataI18n();
-    listeners.forEach((fn) => {
-      try { fn(lang); } catch (e) { console.error(e); }
-    });
+  function t(key, vars = {}) {
+    let text = lang === 'en' && key === 'count' && vars.n === 1 ? '1 article' : messages[lang][key] || messages.zh[key] || key;
+    for (const [name,value] of Object.entries(vars)) text = text.replaceAll(`{${name}}`, String(value));
+    return text;
   }
-
-  function bindToggle(btn) {
-    if (!btn) return;
-    function syncLabel() {
-      btn.textContent = currentLang === 'zh' ? 'EN' : '中';
-      const titleKey = currentLang === 'zh' ? 'lang.toggle.title.toEN' : 'lang.toggle.title.toZH';
-      btn.setAttribute('aria-label', t(titleKey));
-      btn.setAttribute('title', t(titleKey));
+  function apply(scope = document) {
+    scope.querySelectorAll('[data-i18n]').forEach((el) => { el.textContent = t(el.dataset.i18n); });
+    for (const attr of ['aria','placeholder']) {
+      scope.querySelectorAll(`[data-i18n-${attr}]`).forEach((el) => el.setAttribute(attr === 'aria' ? 'aria-label' : attr, t(el.dataset[attr === 'aria' ? 'i18nAria' : 'i18nPlaceholder'])));
     }
-    syncLabel();
-    btn.addEventListener('click', () => {
-      setLang(currentLang === 'zh' ? 'en' : 'zh');
-      syncLabel();
-    });
-    onLangChange(syncLabel);
+    document.querySelector('meta[name="description"]')?.setAttribute('content',t('description'));
   }
-
-  window.__I18N__ = {
-    get lang() { return currentLang; },
-    t,
-    setLang,
-    applyDataI18n,
-    onLangChange,
-    bindToggle,
-    detectLang,
-  };
+  function setLang(next) {
+    if (!['zh','en'].includes(next) || next === lang) return;
+    lang = next;
+    document.documentElement.lang = lang === 'zh' ? 'zh-CN' : 'en';
+    try { localStorage.setItem('amorend.lang', lang); } catch { /* 无存储权限时仍可切换。 */ }
+    const url = new URL(location.href); url.searchParams.set('lang',lang);
+    history.replaceState(history.state,'',url);
+    apply(); listeners.forEach((listener) => listener());
+  }
+  window.__I18N__ = {t,apply,setLang,onChange: (fn) => listeners.add(fn),get lang(){return lang;}};
+  apply();
 })();

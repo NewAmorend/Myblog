@@ -1,6 +1,12 @@
 (function () {
+  let theme = 'light';
+  let language = 'zh';
   try {
-    const saved = localStorage.getItem('amorend-reading-theme');
-    document.documentElement.setAttribute('data-theme', saved === 'light' ? 'light' : 'dark');
-  } catch { /* 存储被禁用时沿用默认主题。 */ }
+    theme = localStorage.getItem('amorend-reading-theme') === 'dark' ? 'dark' : 'light';
+    language = localStorage.getItem('amorend.lang') === 'en' ? 'en' : 'zh';
+  } catch { /* 存储不可用时使用可读的浅色中文界面。 */ }
+  const requested = new URLSearchParams(location.search).get('lang');
+  if (requested === 'en' || requested === 'zh') language = requested;
+  document.documentElement.dataset.theme = theme;
+  document.documentElement.lang = language === 'en' ? 'en' : 'zh-CN';
 })();

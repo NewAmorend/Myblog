@@ -11,3 +11,6 @@ async function check(directory) {
   }
 }
 for (const directory of ['api', 'admin', 'assets', 'scripts', 'tests']) await check(directory);
+
+const rootResult = spawnSync(process.execPath, ['--check', 'i18n.js'], { stdio: 'inherit' });
+if (rootResult.status !== 0) process.exit(rootResult.status || 1);
