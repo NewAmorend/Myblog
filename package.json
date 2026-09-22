@@ -7,7 +7,8 @@
     "check": "node scripts/check-syntax.mjs",
     "vendor": "node scripts/vendor-assets.mjs",
     "build": "node scripts/build-static.mjs",
-    "security-policy": "node scripts/security-policy.mjs"
+    "security-policy": "node scripts/security-policy.mjs",
+    "admin": "node scripts/local-admin.mjs"
   },
   "engines": {
     "node": "^22.22.2 || ^24.15.0 || >=26.0.0"

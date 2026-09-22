@@ -1,5 +1,9 @@
 import { HttpError } from './http.mjs';
 
+let localStore = null;
+// 本机入口注入持久化驱动，部署环境默认仍严格使用 Redis。
+export function configureLocalStore(driver) { localStore = driver; }
+
 export function storeKey(suffix) {
   const namespace = process.env.BLOG_STORAGE_NAMESPACE;
   if (!namespace || !/^[a-zA-Z0-9:_-]{1,100}$/.test(namespace)) {
@@ -10,6 +14,7 @@ export function storeKey(suffix) {
 
 // 私有持久化存储故障时拒绝请求，不能退化为进程内状态。
 export async function redis(...command) {
+  if (localStore) return localStore(command);
   const url = process.env.UPSTASH_REDIS_REST_URL;
   const token = process.env.UPSTASH_REDIS_REST_TOKEN;
   if (!url || !token || !/^https:\/\/[a-z0-9.-]+(?::\d+)?\/?$/i.test(url)) {
