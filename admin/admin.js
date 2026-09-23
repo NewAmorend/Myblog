@@ -8,8 +8,11 @@
     appView: document.querySelector('[data-app-view]'),
     repository: document.querySelector('[data-repository]'),
     logout: document.querySelector('[data-logout]'),
-    newPost: document.querySelector('[data-new-post]'),
+    newContent: document.querySelector('[data-new-content]'),
+    newLabel: document.querySelector('[data-new-label]'),
     emptyNew: document.querySelector('[data-empty-new]'),
+    emptyTitle: document.querySelector('[data-empty-title]'),
+    emptyCopy: document.querySelector('[data-empty-copy]'),
     search: document.querySelector('[data-search]'),
     postCount: document.querySelector('[data-post-count]'),
     postList: document.querySelector('[data-post-list]'),
@@ -34,12 +37,33 @@
     toast: document.querySelector('[data-toast]'),
     busy: document.querySelector('[data-busy]'),
     sidebarToggle: document.querySelector('[data-sidebar-toggle]'),
-    sidebarScrim: document.querySelector('[data-sidebar-scrim]')
+    sidebarScrim: document.querySelector('[data-sidebar-scrim]'),
+    libraryModes: [...document.querySelectorAll('[data-library-mode]')],
+    postSeries: document.querySelector('[data-post-series]'),
+    seriesHint: document.querySelector('[data-series-hint]'),
+    seriesEditor: document.querySelector('[data-series-editor]'),
+    seriesForm: document.querySelector('[data-series-form]'),
+    seriesTitle: document.querySelector('[data-series-title]'),
+    seriesId: document.querySelector('[data-series-id]'),
+    seriesDescription: document.querySelector('[data-series-description]'),
+    seriesPrerequisites: document.querySelector('[data-series-prerequisites]'),
+    seriesChapterCount: document.querySelector('[data-series-chapter-count]'),
+    seriesSaveState: document.querySelector('[data-series-save-state]'),
+    seriesLiveLink: document.querySelector('[data-series-live-link]'),
+    chapterPicker: document.querySelector('[data-chapter-picker]'),
+    chapterList: document.querySelector('[data-chapter-list]'),
+    chapterEmpty: document.querySelector('[data-chapter-empty]'),
+    addChapter: document.querySelector('[data-add-chapter]'),
+    deleteSeries: document.querySelector('[data-delete-series]')
   };
 
   const state = {
     csrf: '',
     posts: [],
+    series: [],
+    libraryMode: 'posts',
+    currentSeries: null,
+    seriesDirty: false,
     current: null,
     dirty: false,
     busy: false,
@@ -94,7 +118,7 @@
     }
     elements.loginView.hidden = true;
     elements.appView.hidden = false;
-    await task(refreshPosts);
+    await task(refreshLibrary);
   }
 
   function toast(message, type = 'success') {
@@ -133,11 +157,24 @@
 
   function renderPostList() {
     const query = elements.search.value.trim().toLowerCase();
+    if (state.libraryMode === 'series') {
+      const collections = state.series.filter((item) => !query || `${item.title} ${item.description} ${item.id}`.toLowerCase().includes(query));
+      elements.postCount.textContent = `${state.series.length} 个系列`;
+      elements.postList.setAttribute('aria-label', '系列列表');
+      elements.postList.innerHTML = collections.length ? collections.map((item) => `
+        <button class="post-button${state.currentSeries?.id === item.id ? ' is-active' : ''}" type="button" data-series-id="${escapeHTML(item.id)}">
+          <strong>${escapeHTML(item.title || '未命名系列')}</strong>
+          <span class="post-footer"><span>${escapeHTML(item.chapterCount)} 章</span><span class="post-status">已发布</span></span>
+        </button>`).join('') : '<p class="post-list-empty">还没有系列。</p>';
+      return;
+    }
     const posts = state.posts.filter((post) => {
-      const haystack = `${post.title} ${post.tag} ${post.category} ${post.id}`.toLowerCase();
+      const seriesTitle = state.series.find((item) => item.id === post.seriesId)?.title || '';
+      const haystack = `${post.title} ${post.tag} ${post.category} ${post.id} ${seriesTitle}`.toLowerCase();
       return !query || haystack.includes(query);
     });
     elements.postCount.textContent = `${state.posts.length} 篇内容`;
+    elements.postList.setAttribute('aria-label', '文章列表');
 
     if (!posts.length) {
       elements.postList.innerHTML = '<p class="post-list-empty">没有匹配的文章。</p>';
@@ -148,21 +185,109 @@
       <button class="post-button${state.current?.post?.id === post.id ? ' is-active' : ''}" type="button" data-post-id="${escapeHTML(post.id)}">
         <strong>${escapeHTML(post.title || '未命名文章')}</strong>
         <span class="post-footer">
-          <span>${escapeHTML(post.date || '未定日期')} · ${escapeHTML(post.tag || '无标签')}</span>
+          <span>${escapeHTML(post.date || '未定日期')} · ${escapeHTML(state.series.find((item) => item.id === post.seriesId)?.title || post.tag || '独立文章')}</span>
           <span class="post-status ${escapeHTML(post.status)}">${statusLabel(post)}</span>
         </span>
       </button>
     `).join('');
   }
 
-  async function refreshPosts() {
-    const result = await api('/api/admin/posts');
-    state.posts = result.posts || [];
+  function renderSeriesOptions() {
+    const selected = elements.postSeries.value;
+    elements.postSeries.innerHTML = '<option value="">独立文章</option>' + state.series.map((item) =>
+      `<option value="${escapeHTML(item.id)}">${escapeHTML(item.title)}</option>`).join('');
+    elements.postSeries.value = state.series.some((item) => item.id === selected) ? selected : '';
+  }
+
+  async function refreshLibrary() {
+    const [postResult, seriesResult] = await Promise.all([api('/api/admin/posts'), api('/api/admin/series')]);
+    state.posts = postResult.posts || [];
+    state.series = seriesResult.series || [];
+    renderSeriesOptions();
     renderPostList();
   }
 
+  async function refreshPosts() { return refreshLibrary(); }
+
+  function updateLibraryMode(mode) {
+    if (!['posts', 'series'].includes(mode) || mode === state.libraryMode) return;
+    if (!confirmDiscard()) return;
+    state.libraryMode = mode;
+    elements.libraryModes.forEach((button) => button.setAttribute('aria-selected', String(button.dataset.libraryMode === mode)));
+    elements.newLabel.textContent = mode === 'series' ? '新建系列' : '新建文章';
+    elements.search.placeholder = mode === 'series' ? '搜索系列…' : '搜索标题、标签…';
+    elements.emptyTitle.textContent = mode === 'series' ? '选一个系列，或者建立新的目录。' : '选一篇文章，或者从空白开始。';
+    elements.emptyCopy.textContent = mode === 'series' ? '系列负责组织简介与章节顺序；正文仍在文章编辑器中完成。' : '草稿保存在本机；点击发布后，才会进入公开文章列表。';
+    elements.emptyNew.textContent = mode === 'series' ? '新建系列' : '写新文章';
+    elements.search.value = '';
+    clearEditor();
+  }
+
+  function seriesIsPersisted() {
+    return Boolean(state.currentSeries && state.series.some((item) => item.id === state.currentSeries.id));
+  }
+
+  function setSeriesDirty(value = true) {
+    state.seriesDirty = value;
+    elements.seriesSaveState.textContent = value ? '有未发布的修改' : '已与线上同步';
+    elements.seriesSaveState.style.color = value ? 'var(--amber)' : '';
+  }
+
+  function renderChapterEditor() {
+    if (!state.currentSeries) return;
+    const chapters = state.currentSeries.chapters || [];
+    const published = state.posts.filter((post) => post.published);
+    const byId = new Map(published.map((post) => [post.id, post]));
+    elements.seriesChapterCount.textContent = `${chapters.length} 章`;
+    elements.chapterList.innerHTML = chapters.map((id, index) => {
+      const post = byId.get(id);
+      return `<li class="chapter-row" data-chapter-id="${escapeHTML(id)}"><div><strong>${escapeHTML(post?.title || id)}</strong><small>${escapeHTML(id)}</small></div><div class="chapter-actions"><button type="button" data-chapter-action="up" aria-label="上移" ${index === 0 ? 'disabled' : ''}>↑</button><button type="button" data-chapter-action="down" aria-label="下移" ${index === chapters.length - 1 ? 'disabled' : ''}>↓</button><button type="button" data-chapter-action="remove" aria-label="移出系列">×</button></div></li>`;
+    }).join('');
+    elements.chapterEmpty.hidden = chapters.length > 0;
+    const used = new Set(state.series.flatMap((item) => item.id === state.currentSeries.id ? [] : (item.chapters || [])));
+    const available = published.filter((post) => !chapters.includes(post.id) && !used.has(post.id));
+    elements.chapterPicker.innerHTML = available.length
+      ? available.map((post) => `<option value="${escapeHTML(post.id)}">${escapeHTML(post.title)}</option>`).join('')
+      : '<option value="">没有可加入的已发布文章</option>';
+    elements.addChapter.disabled = !available.length;
+  }
+
+  function setSeriesForm(item, persisted = true) {
+    state.currentSeries = { ...item, chapters: [...(item.chapters || [])] };
+    elements.seriesForm.elements.title.value = item.title || '';
+    elements.seriesForm.elements.id.value = item.id || '';
+    elements.seriesForm.elements.description.value = item.description || '';
+    elements.seriesForm.elements.prerequisites.value = item.prerequisites || '';
+    elements.seriesId.readOnly = persisted;
+    elements.editorEmpty.hidden = true;
+    elements.editor.hidden = true;
+    elements.seriesEditor.hidden = false;
+    elements.seriesLiveLink.hidden = !persisted;
+    elements.seriesLiveLink.href = `../series.html?series=${encodeURIComponent(item.id)}`;
+    elements.deleteSeries.hidden = !persisted;
+    setSeriesDirty(!persisted);
+    renderChapterEditor();
+    renderPostList();
+  }
+
+  async function openSeries(id) {
+    if (!confirmDiscard()) return;
+    await task(async () => {
+      const result = await api(`/api/admin/series?id=${encodeURIComponent(id)}`);
+      setSeriesForm(result.series, true);
+      document.body.classList.remove('sidebar-open');
+    });
+  }
+
+  function newSeries() {
+    if (!confirmDiscard()) return;
+    setSeriesForm({ id: `series-${new Date().toISOString().slice(0, 10).replaceAll('-', '')}`, title: '', description: '', prerequisites: '', chapters: [] }, false);
+    elements.seriesTitle.focus();
+    document.body.classList.remove('sidebar-open');
+  }
+
   function confirmDiscard() {
-    return !state.dirty || window.confirm('当前修改还没有保存，确定离开吗？');
+    return (!state.dirty && !state.seriesDirty) || window.confirm('当前修改还没有保存，确定离开吗？');
   }
 
   function resizeTitle() {
@@ -184,7 +309,7 @@
       : `<pre>${escapeHTML(markdown)}</pre>`;
     const title = escapeHTML(elements.title.value || '未命名文章');
     elements.preview.srcdoc = `<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><base href="${location.origin}/"><style>
-      *{box-sizing:border-box}body{max-width:760px;margin:0 auto;padding:42px 34px 80px;background:#f2f0e9;color:#23252a;font:16px/1.82 Georgia,'Noto Serif SC',serif}h1{margin:0 0 38px;font-size:42px;line-height:1.08}h2,h3{margin:2em 0 .65em;line-height:1.3}h2{font-size:28px}h3{font-size:21px}p{margin:0 0 1.2em}a{color:#345fae}img{max-width:100%;height:auto;border-radius:4px}blockquote{margin:1.6em 0;padding:.1em 1.2em;border-left:3px solid #6c88ba;color:#5d616a}pre{overflow:auto;padding:18px;border-radius:6px;background:#1d2026;color:#e8e8e5;font:13px/1.7 ui-monospace,monospace}code{font-family:ui-monospace,monospace;font-size:.88em}p code,li code{padding:.12em .35em;border-radius:3px;background:#dedbd2}table{width:100%;border-collapse:collapse}th,td{padding:8px 10px;border:1px solid #cbc8bf;text-align:left}hr{border:0;border-top:1px solid #cbc8bf;margin:2.5em 0}</style></head><body><h1>${title}</h1>${rendered}</body></html>`;
+      *{box-sizing:border-box}body{max-width:740px;margin:0 auto;padding:42px 34px 80px;background:#fff;color:#202020;font:17px/1.95 -apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif}h1{margin:0 0 38px;font-size:38px;line-height:1.45}h2,h3{margin:1.8em 0 .7em;line-height:1.4}h2{font-size:26px}h3{font-size:21px}p{margin:0 0 1.4em}a{color:inherit;text-underline-offset:4px}img{max-width:100%;height:auto}blockquote{margin:1.6em 0;padding:0 20px;border-left:2px solid #e5e5e5;color:#666}pre{overflow:auto;padding:18px;background:#f6f6f6;font:14px/1.7 ui-monospace,monospace}code{font-family:ui-monospace,monospace;font-size:.88em}p code,li code{padding:2px 4px;background:#f6f6f6}table{width:100%;border-collapse:collapse}th,td{padding:10px 14px;border:1px solid #e5e5e5;text-align:left}hr{border:0;border-top:1px solid #e5e5e5;margin:36px 0}</style></head><body><h1>${title}</h1>${rendered}</body></html>`;
   }
 
   function schedulePreview() {
@@ -225,8 +350,16 @@
     elements.form.elements.category.value = post.category || '工程';
     elements.form.elements.excerpt.value = post.excerpt || '';
     elements.form.elements.content.value = post.content || '';
+    renderSeriesOptions();
+    elements.form.elements.seriesId.value = post.seriesId || '';
+    elements.seriesHint.textContent = post.seriesId
+      ? `当前是「${state.series.find((item) => item.id === post.seriesId)?.title || post.seriesId}」的章节。章节顺序可在“系列”中调整。`
+      : '独立文章会显示在“文章”入口；选择系列后，发布时会自动追加为该系列的最后一章。';
     elements.editorEmpty.hidden = true;
     elements.editor.hidden = false;
+    elements.seriesEditor.hidden = true;
+    state.currentSeries = null;
+    state.seriesDirty = false;
     state.slugTouched = Boolean(current.persisted);
     setDirty(false);
     resizeTitle();
@@ -255,7 +388,7 @@
   function newPost() {
     if (!confirmDiscard()) return;
     setFormPost({
-      post: { id: dateSlug(), title: '', date: new Date().toISOString().slice(0, 10), tag: 'Notes', category: '工程', excerpt: '', content: '' },
+      post: { id: dateSlug(), title: '', date: new Date().toISOString().slice(0, 10), tag: 'Notes', category: '工程', excerpt: '', content: '', seriesId: '' },
       state: 'draft',
       published: false,
       persisted: false
@@ -276,7 +409,8 @@
       tag: elements.form.elements.tag.value.trim(),
       category: elements.form.elements.category.value,
       excerpt: elements.form.elements.excerpt.value.trim(),
-      content: elements.form.elements.content.value
+      content: elements.form.elements.content.value,
+      seriesId: elements.form.elements.seriesId.value
     };
   }
 
@@ -346,8 +480,11 @@
 
   function clearEditor() {
     state.current = null;
+    state.currentSeries = null;
     state.dirty = false;
+    state.seriesDirty = false;
     elements.editor.hidden = true;
+    elements.seriesEditor.hidden = true;
     elements.editorEmpty.hidden = false;
     renderPostList();
   }
@@ -401,6 +538,46 @@
       .slice(0, 80);
   }
 
+  async function publishSeriesForm() {
+    if (!elements.seriesForm.reportValidity()) return;
+    const item = {
+      id: elements.seriesForm.elements.id.value.trim(),
+      title: elements.seriesForm.elements.title.value.trim(),
+      description: elements.seriesForm.elements.description.value.trim(),
+      prerequisites: elements.seriesForm.elements.prerequisites.value.trim(),
+      chapters: [...(state.currentSeries?.chapters || [])]
+    };
+    await task(async () => {
+      const result = await api('/api/admin/series', { method: 'PUT', body: { series: item } });
+      toast(result.created ? '系列已创建，站点正在重新部署' : '系列目录已更新，站点正在重新部署');
+      await refreshLibrary();
+      setSeriesForm(result.series, true);
+    });
+  }
+
+  async function deleteSeries() {
+    if (!state.currentSeries || !window.confirm('确定下线这个系列吗？章节正文会保留，并重新显示为独立文章。')) return;
+    const id = state.currentSeries.id;
+    await task(async () => {
+      await api('/api/admin/series', { method: 'DELETE', body: { id } });
+      toast('系列已下线，章节正文仍然保留');
+      await refreshLibrary();
+      clearEditor();
+    });
+  }
+
+  function changeChapter(id, action) {
+    if (!state.currentSeries) return;
+    const chapters = state.currentSeries.chapters;
+    const index = chapters.indexOf(id);
+    if (index === -1) return;
+    if (action === 'remove') chapters.splice(index, 1);
+    if (action === 'up' && index > 0) [chapters[index - 1], chapters[index]] = [chapters[index], chapters[index - 1]];
+    if (action === 'down' && index < chapters.length - 1) [chapters[index + 1], chapters[index]] = [chapters[index], chapters[index + 1]];
+    setSeriesDirty();
+    renderChapterEditor();
+  }
+
   elements.loginForm.addEventListener('submit', async (event) => {
     event.preventDefault();
     elements.loginError.textContent = '';
@@ -429,12 +606,15 @@
       else toast(errorMessage(error), 'error');
     }
   });
-  elements.newPost.addEventListener('click', newPost);
-  elements.emptyNew.addEventListener('click', newPost);
+  elements.libraryModes.forEach((button) => button.addEventListener('click', () => updateLibraryMode(button.dataset.libraryMode)));
+  elements.newContent.addEventListener('click', () => state.libraryMode === 'series' ? newSeries() : newPost());
+  elements.emptyNew.addEventListener('click', () => state.libraryMode === 'series' ? newSeries() : newPost());
   elements.search.addEventListener('input', renderPostList);
   elements.postList.addEventListener('click', (event) => {
     const button = event.target.closest('[data-post-id]');
     if (button) openPost(button.dataset.postId);
+    const seriesButton = event.target.closest('[data-series-id]');
+    if (seriesButton) openSeries(seriesButton.dataset.seriesId);
   });
   elements.save.addEventListener('click', () => saveDraft());
   elements.publish.addEventListener('click', publish);
@@ -444,6 +624,33 @@
   elements.imageInput.addEventListener('change', () => uploadImage(elements.imageInput.files[0]));
   elements.sidebarToggle.addEventListener('click', () => document.body.classList.toggle('sidebar-open'));
   elements.sidebarScrim.addEventListener('click', () => document.body.classList.remove('sidebar-open'));
+  elements.seriesForm.addEventListener('submit', (event) => { event.preventDefault(); publishSeriesForm(); });
+  elements.seriesForm.addEventListener('input', () => setSeriesDirty());
+  elements.seriesTitle.addEventListener('input', () => {
+    if (!seriesIsPersisted()) {
+      const slug = slugify(elements.seriesTitle.value);
+      if (slug) elements.seriesId.value = slug;
+    }
+  });
+  elements.addChapter.addEventListener('click', () => {
+    const id = elements.chapterPicker.value;
+    if (!id || !state.currentSeries) return;
+    state.currentSeries.chapters.push(id);
+    setSeriesDirty();
+    renderChapterEditor();
+  });
+  elements.chapterList.addEventListener('click', (event) => {
+    const action = event.target.closest('[data-chapter-action]');
+    const row = event.target.closest('[data-chapter-id]');
+    if (action && row) changeChapter(row.dataset.chapterId, action.dataset.chapterAction);
+  });
+  elements.deleteSeries.addEventListener('click', deleteSeries);
+  elements.postSeries.addEventListener('change', () => {
+    const title = state.series.find((item) => item.id === elements.postSeries.value)?.title;
+    elements.seriesHint.textContent = title
+      ? `发布后会追加为「${title}」的最后一章；之后可在“系列”中调整顺序。`
+      : '独立文章会显示在“文章”入口。';
+  });
 
   elements.form.addEventListener('input', (event) => {
     if (!state.current) return;
@@ -477,7 +684,7 @@
     }
   });
   window.addEventListener('beforeunload', (event) => {
-    if (!state.dirty) return;
+    if (!state.dirty && !state.seriesDirty) return;
     event.preventDefault();
     event.returnValue = '';
   });

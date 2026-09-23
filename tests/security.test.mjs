@@ -84,11 +84,32 @@ test('草稿保存和删除仅访问私有存储，更新版本不会被误删',
   const input = { id: 'private-note', title: '私密草稿', date: '2026-09-22', tag: '笔记', content: '不能进入公开仓库', category: '工程' };
   const { post } = await saveDraft(input);
   assert.equal((await readDrafts())[0].content, input.content);
+  assert.equal((await readDrafts())[0].seriesId, '');
   await writeDraft({ ...post, content: '另一个窗口的新内容' });
   assert.equal(await removeDraft(post), 0);
   assert.equal((await readDrafts())[0].content, '另一个窗口的新内容');
   await deleteDraft(input.id);
   assert.deepEqual(await readDrafts(), []);
+});
+
+test('旧草稿会继承已发布文章的系列归属', async (t) => {
+  const { getPost } = await import('../api/_lib/posts.mjs');
+  const oldDraft = {
+    id: 'legacy-chapter', file: 'legacy-chapter.md', title: '旧章节', date: '2026-09-22',
+    tag: '测试', category: '工程', excerpt: '', content: '正文', updatedAt: new Date().toISOString()
+  };
+  await writeDraft(oldDraft);
+  const privateFetch = globalThis.fetch;
+  t.mock.method(globalThis, 'fetch', async (url, init = {}) => {
+    if (url === 'https://redis.test') return privateFetch(url, init);
+    const path = new URL(url).pathname;
+    const data = path.includes('/contents/blog/index.json')
+      ? [{ id: 'legacy-chapter', file: 'legacy-chapter.md', title: '旧章节', date: '2026-09-22', tag: '测试', category: '工程', excerpt: '' }]
+      : [{ id: 'legacy-series', title: '旧系列', description: '说明', prerequisites: '', chapters: ['legacy-chapter'] }];
+    return new Response(JSON.stringify({ type: 'file', content: Buffer.from(JSON.stringify(data)).toString('base64') }));
+  });
+  const result = await getPost('legacy-chapter');
+  assert.equal(result.post.seriesId, 'legacy-series');
 });
 
 test('会话超过八小时后过期', async (t) => {
@@ -115,7 +136,9 @@ test('发布仅提交公开文章、索引和 sitemap；成功后才移除草稿
     assert.equal(new URL(url).hostname, 'api.github.com');
     const path = new URL(url).pathname;
     let result;
-    if (path.includes('/contents/blog/index.json')) result = { type: 'file', content: Buffer.from('[]').toString('base64') };
+    if (path.includes('/contents/blog/index.json') || path.includes('/contents/series/index.json')) {
+      result = { type: 'file', content: Buffer.from('[]').toString('base64') };
+    }
     else if (path.endsWith('/git/ref/heads/main')) result = { object: { sha: 'base' } };
     else if (path.endsWith('/git/commits/base')) result = { tree: { sha: 'base-tree' } };
     else if (path.endsWith('/git/blobs')) result = { sha: 'blob' };
@@ -136,8 +159,44 @@ test('发布仅提交公开文章、索引和 sitemap；成功后才移除草稿
   assert.deepEqual(trees.at(-1).tree.map((file) => file.path), ['blog/publish-test.md', 'blog/index.json', 'sitemap.xml']);
 });
 
+test('发布系列章节会原子更新文章、系列目录和 sitemap', async (t) => {
+  const { publishDraft } = await import('../api/_lib/posts.mjs');
+  const input = { id: 'series-chapter', title: '系列章节', date: '2026-09-24', tag: '测试', content: '正文', category: '工程', seriesId: 'systems' };
+  await saveDraft(input);
+  const privateFetch = globalThis.fetch;
+  const blobs = new Map();
+  let tree;
+  t.mock.method(globalThis, 'fetch', async (url, init = {}) => {
+    if (url === 'https://redis.test') return privateFetch(url, init);
+    const path = new URL(url).pathname;
+    let result;
+    if (path.includes('/contents/blog/index.json')) result = { type: 'file', content: Buffer.from('[]').toString('base64') };
+    else if (path.includes('/contents/series/index.json')) {
+      const value = [{ id: 'systems', title: '系统系列', description: '说明', prerequisites: '', chapters: [] }];
+      result = { type: 'file', content: Buffer.from(JSON.stringify(value)).toString('base64') };
+    } else if (path.endsWith('/git/ref/heads/main')) result = { object: { sha: 'base' } };
+    else if (path.endsWith('/git/commits/base')) result = { tree: { sha: 'base-tree' } };
+    else if (path.endsWith('/git/blobs')) {
+      const sha = `blob-${blobs.size}`;
+      blobs.set(sha, Buffer.from(JSON.parse(init.body).content, 'base64').toString('utf8'));
+      result = { sha };
+    } else if (path.endsWith('/git/trees')) { tree = JSON.parse(init.body); result = { sha: 'tree' }; }
+    else if (path.endsWith('/git/commits')) result = { sha: 'commit' };
+    else if (path.endsWith('/git/refs/heads/main')) result = { object: { sha: 'commit' } };
+    else throw new Error(`不允许访问 ${path}`);
+    return new Response(JSON.stringify(result));
+  });
+
+  await publishDraft(input.id);
+  assert.deepEqual(tree.tree.map((file) => file.path), ['blog/series-chapter.md', 'blog/index.json', 'series/index.json', 'sitemap.xml']);
+  const seriesBlob = blobs.get(tree.tree.find((file) => file.path === 'series/index.json').sha);
+  assert.deepEqual(JSON.parse(seriesBlob)[0].chapters, ['series-chapter']);
+  const sitemapBlob = blobs.get(tree.tree.find((file) => file.path === 'sitemap.xml').sha);
+  assert.match(sitemapBlob, /series\.html\?series=systems/);
+});
+
 test('所有内容接口在未登录时拒绝访问', async () => {
-  for (const [name, method] of [['posts', 'GET'], ['post', 'GET'], ['post', 'PUT'], ['publish', 'POST'], ['upload', 'POST'], ['session', 'GET']]) {
+  for (const [name, method] of [['posts', 'GET'], ['post', 'GET'], ['post', 'PUT'], ['publish', 'POST'], ['upload', 'POST'], ['series', 'GET'], ['series', 'PUT'], ['session', 'GET']]) {
     const { default: handler } = await import(`../api/admin/${name}.mjs`);
     const res = response();
     await handler({ ...request(), method, url: `/api/admin/${name}`, body: {} }, res);

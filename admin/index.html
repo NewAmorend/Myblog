@@ -48,12 +48,17 @@
         </button>
       </header>
 
-      <button class="new-post" type="button" data-new-post>
-        <span>新建文章</span><span aria-hidden="true">＋</span>
+      <div class="content-tabs" role="tablist" aria-label="内容类型">
+        <button type="button" role="tab" aria-selected="true" data-library-mode="posts">文章</button>
+        <button type="button" role="tab" aria-selected="false" data-library-mode="series">系列</button>
+      </div>
+
+      <button class="new-post" type="button" data-new-content>
+        <span data-new-label>新建文章</span><span aria-hidden="true">＋</span>
       </button>
 
       <label class="search-box">
-        <span class="sr-only">搜索文章</span>
+        <span class="sr-only">搜索内容</span>
         <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg>
         <input type="search" placeholder="搜索标题、标签…" data-search>
       </label>
@@ -73,14 +78,14 @@
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
         </button>
         <p><span class="connection-dot"></span> Repository connected</p>
-        <a href="../blog.html" target="_blank" rel="noopener">查看博客 ↗</a>
+        <a href="../index.html" target="_blank" rel="noopener">查看博客 ↗</a>
       </header>
 
       <section class="empty-state" data-editor-empty>
         <div class="empty-mark">A</div>
         <p class="eyebrow">Writing room</p>
-        <h1>选一篇文章，或者从空白开始。</h1>
-        <p>草稿保存在私有存储中；点击发布后，才会进入公开文章列表。</p>
+        <h1 data-empty-title>选一篇文章，或者从空白开始。</h1>
+        <p data-empty-copy>草稿保存在本机；点击发布后，才会进入公开文章列表。</p>
         <button class="button primary" type="button" data-empty-new>写新文章</button>
       </section>
 
@@ -135,7 +140,14 @@
                   <option value="求职">求职</option>
                 </select>
               </label>
+              <label>
+                <span>内容归属</span>
+                <select name="seriesId" data-post-series>
+                  <option value="">独立文章</option>
+                </select>
+              </label>
             </div>
+            <p class="series-hint" data-series-hint>独立文章会显示在“文章”入口；选择系列后，发布时会自动追加为该系列的最后一章。</p>
 
             <label class="excerpt-field">
               <span>摘要 <small>显示在博客列表与分享卡片中</small></span>
@@ -178,6 +190,51 @@
                 <button class="text-danger" type="button" data-delete-draft hidden>删除草稿</button>
                 <button class="text-danger" type="button" data-unpublish hidden>下线文章</button>
               </div>
+            </footer>
+          </div>
+        </form>
+      </section>
+
+      <section class="editor series-editor" data-series-editor hidden>
+        <form data-series-form>
+          <header class="editor-header">
+            <div>
+              <p class="eyebrow">Series outline</p>
+              <div class="document-state"><span class="status-pill published">系列目录</span><span data-series-save-state>尚未修改</span></div>
+            </div>
+            <div class="editor-actions">
+              <a class="button ghost" data-series-live-link href="#" target="_blank" rel="noopener" hidden>线上页面 ↗</a>
+              <button class="button primary" type="submit">发布系列</button>
+            </div>
+          </header>
+          <div class="editor-scroll series-editor-scroll">
+            <label class="title-field">
+              <span class="sr-only">系列标题</span>
+              <textarea name="title" rows="1" maxlength="160" placeholder="系列标题" required data-series-title></textarea>
+            </label>
+            <div class="metadata-grid series-metadata">
+              <label><span>系列 ID</span><input name="id" maxlength="80" pattern="[a-z0-9]+(?:-[a-z0-9]+)*" placeholder="my-series" required data-series-id></label>
+              <label><span>已发布章节</span><output data-series-chapter-count>0 章</output></label>
+            </div>
+            <label class="excerpt-field">
+              <span>系列简介 <small>说明主题、范围和适合的读者</small></span>
+              <textarea name="description" rows="4" maxlength="1000" required data-series-description></textarea>
+            </label>
+            <label class="excerpt-field">
+              <span>阅读前提 <small>可选</small></span>
+              <textarea name="prerequisites" rows="3" maxlength="1000" data-series-prerequisites></textarea>
+            </label>
+            <section class="chapter-editor" aria-labelledby="chapter-editor-title">
+              <div class="chapter-editor-heading">
+                <div><h2 id="chapter-editor-title">章节顺序</h2><p>只显示已发布文章。拖动不可靠，因此用上下按钮明确排序。</p></div>
+                <div class="chapter-add"><select data-chapter-picker aria-label="选择要加入的文章"></select><button class="button ghost" type="button" data-add-chapter>加入</button></div>
+              </div>
+              <ol data-chapter-list></ol>
+              <p class="chapter-empty" data-chapter-empty>还没有章节。先发布文章，再从上方加入。</p>
+            </section>
+            <footer class="danger-zone">
+              <div><strong>系列操作</strong><p>删除系列后，章节正文保留并回到独立文章列表。</p></div>
+              <button class="text-danger" type="button" data-delete-series hidden>下线系列</button>
             </footer>
           </div>
         </form>

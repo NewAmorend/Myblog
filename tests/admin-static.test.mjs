@@ -24,3 +24,14 @@ test('后台静态资源使用不受 clean URL 影响的绝对路径', async () 
   assert.match(html, /href="\/admin\/admin\.css"/);
   assert.match(html, /src="\/admin\/admin\.js"/);
 });
+
+test('后台提供文章与系列两级内容管理入口', async () => {
+  const html = await readFile(adminHtmlUrl, 'utf8');
+  const script = await readFile(adminScriptUrl, 'utf8');
+
+  assert.match(html, /data-library-mode="posts"/);
+  assert.match(html, /data-library-mode="series"/);
+  assert.match(html, /name="seriesId"/);
+  assert.match(html, /data-series-form/);
+  assert.match(script, /\/api\/admin\/series/);
+});

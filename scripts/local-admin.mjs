@@ -32,7 +32,7 @@ if (!process.env.BLOG_GITHUB_TOKEN && !process.env.GITHUB_TOKEN) {
 }
 
 const handlers = new Map();
-for (const name of ['login','logout','session','posts','post','publish','upload']) {
+for (const name of ['login','logout','session','posts','post','publish','upload','series']) {
   handlers.set(`/api/admin/${name}`, (await import(`../api/admin/${name}.mjs`)).default);
 }
 const types = {'.html':'text/html; charset=utf-8','.js':'text/javascript; charset=utf-8','.css':'text/css; charset=utf-8','.svg':'image/svg+xml','.png':'image/png','.jpg':'image/jpeg','.jpeg':'image/jpeg','.webp':'image/webp','.avif':'image/avif','.gif':'image/gif','.woff':'font/woff','.woff2':'font/woff2','.ico':'image/x-icon'};

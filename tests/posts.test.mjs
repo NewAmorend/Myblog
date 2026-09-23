@@ -25,6 +25,13 @@ test('文章数据会被规范化为现有博客结构', () => {
   });
 });
 
+test('文章可以选择系列，系列 ID 不会写入公开 Markdown', () => {
+  const post = normalizePost({ ...sample, seriesId: 'agent-systems' });
+  assert.equal(post.seriesId, 'agent-systems');
+  assert.doesNotMatch(formatMarkdown(post), /seriesId/);
+  assert.throws(() => normalizePost({ ...sample, seriesId: '非法 系列' }), /系列 ID/);
+});
+
 test('非法 slug、日期和分类会被拒绝', () => {
   assert.throws(() => normalizePost({ ...sample, id: '中文 ID' }), /文章 ID/);
   assert.throws(() => normalizePost({ ...sample, date: '2026-02-30' }), /日期/);
@@ -49,8 +56,9 @@ test('文章按日期倒序排列且不修改原数组', () => {
 });
 
 test('sitemap 包含公开文章并正确转义查询参数', () => {
-  const sitemap = generateSitemap([sample], 'https://example.com/', '2026-08-02');
+  const sitemap = generateSitemap([sample], 'https://example.com/', '2026-08-02', [{ id: 'agent-systems' }]);
   assert.match(sitemap, /https:\/\/example\.com\/article\.html\?post=agent-context-notes/);
+  assert.match(sitemap, /https:\/\/example\.com\/series\.html\?series=agent-systems/);
   assert.match(sitemap, /<lastmod>2026-08-02<\/lastmod>/);
   assert.match(sitemap, /<urlset xmlns="http:\/\/www\.sitemaps\.org\/schemas\/sitemap\/0\.9">/);
 });

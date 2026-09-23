@@ -33,6 +33,8 @@ export function normalizePost(input) {
   const category = cleanText(input?.category || '工程', 20, '分类');
   if (!CATEGORIES.has(category)) throw new HttpError(400, '分类只能是求职、博客或工程');
 
+  const seriesId = cleanText(input?.seriesId, 80, '系列 ID', false).toLowerCase();
+  if (seriesId && !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(seriesId)) throw new HttpError(400, '系列 ID 格式不正确');
   return {
     id,
     file: `${id}.md`,
@@ -41,7 +43,8 @@ export function normalizePost(input) {
     tag: cleanText(input?.tag, 60, '标签'),
     category,
     excerpt: cleanText(input?.excerpt, 500, '摘要', false),
-    content: cleanText(input?.content, 900_000, '正文', false)
+    content: cleanText(input?.content, 900_000, '正文', false),
+    ...(seriesId ? { seriesId } : {})
   };
 }
 
@@ -85,7 +88,7 @@ function xmlEscape(value) {
   return String(value).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
 
-export function generateSitemap(posts, siteUrl = process.env.BLOG_SITE_URL || DEFAULT_SITE_URL, today = new Date().toISOString().slice(0, 10)) {
+export function generateSitemap(posts, siteUrl = process.env.BLOG_SITE_URL || DEFAULT_SITE_URL, today = new Date().toISOString().slice(0, 10), series = []) {
   const site = siteUrl.replace(/\/$/, '');
   const entry = (loc, lastmod, changefreq, priority) => `  <url>\n` +
     `    <loc>${xmlEscape(loc)}</loc>\n` +
@@ -97,6 +100,7 @@ export function generateSitemap(posts, siteUrl = process.env.BLOG_SITE_URL || DE
     entry(`${site}/`, today, 'weekly', '1.0'),
     entry(`${site}/blog.html`, today, 'weekly', '0.9'),
     entry(`${site}/series.html`, today, 'weekly', '0.9'),
+    ...series.map((item) => entry(`${site}/series.html?series=${encodeURIComponent(item.id)}`, today, 'weekly', '0.8')),
     ...sortPosts(posts).map((post) => entry(
       `${site}/article.html?post=${encodeURIComponent(post.id)}`,
       post.date || today,
@@ -108,12 +112,17 @@ export function generateSitemap(posts, siteUrl = process.env.BLOG_SITE_URL || DE
 }
 
 async function readState() {
-  const [posts, drafts] = await Promise.all([
+  const [posts, drafts, series] = await Promise.all([
     readRepoJson(INDEX_PATH, []),
-    readDrafts()
+    readDrafts(),
+    readRepoJson('series/index.json', [])
   ]);
-  if (!Array.isArray(posts) || !Array.isArray(drafts)) throw new HttpError(502, '文章索引格式不正确');
-  return { posts, drafts };
+  if (!Array.isArray(posts) || !Array.isArray(drafts) || !Array.isArray(series)) throw new HttpError(502, '内容索引格式不正确');
+  return { posts, drafts, series };
+}
+
+function membership(series, postId) {
+  return series.find((item) => Array.isArray(item.chapters) && item.chapters.includes(postId))?.id || '';
 }
 
 function publicEntry(post) {
@@ -138,9 +147,10 @@ function jsonFile(value) {
 }
 
 export async function listPosts() {
-  const { posts, drafts } = await readState();
+  const { posts, drafts, series } = await readState();
   const byId = new Map(posts.map((post) => [post.id, {
     ...summary(post),
+    seriesId: membership(series, post.id),
     category: post.category || '工程',
     published: true,
     hasDraft: false,
@@ -149,8 +159,10 @@ export async function listPosts() {
 
   drafts.forEach((draft) => {
     const published = byId.get(draft.id);
+    const draftSeriesId = Object.hasOwn(draft, 'seriesId') ? draft.seriesId : membership(series, draft.id);
     byId.set(draft.id, {
       ...summary(draft),
+      seriesId: draftSeriesId,
       published: Boolean(published),
       hasDraft: true,
       status: published ? 'changed' : 'draft'
@@ -166,17 +178,20 @@ export async function listPosts() {
 
 export async function getPost(id) {
   const safeId = cleanText(id, 80, '文章 ID');
-  const { posts, drafts } = await readState();
+  const { posts, drafts, series } = await readState();
   const draft = drafts.find((item) => item.id === safeId);
   const published = posts.find((item) => item.id === safeId);
 
-  if (draft) return { post: normalizePost(draft), state: 'draft', published: Boolean(published), updatedAt: draft.updatedAt };
+  if (draft) {
+    const seriesId = Object.hasOwn(draft, 'seriesId') ? draft.seriesId : membership(series, safeId);
+    return { post: normalizePost({ ...draft, seriesId }), state: 'draft', published: Boolean(published), updatedAt: draft.updatedAt };
+  }
   if (!published) throw new HttpError(404, '没有找到这篇文章');
 
   const markdown = await readRepoFile(`blog/${published.file}`);
   const parsed = parseMarkdown(markdown);
   return {
-    post: normalizePost({ ...parsed.meta, ...published, content: parsed.content }),
+    post: normalizePost({ ...parsed.meta, ...published, content: parsed.content, seriesId: membership(series, safeId) }),
     state: 'published',
     published: true,
     updatedAt: null
@@ -190,14 +205,15 @@ export async function saveDraft(input) {
 
   const now = new Date().toISOString();
   const existing = drafts.find((item) => item.id === post.id);
-  const draft = { ...post, createdAt: existing?.createdAt || now, updatedAt: now };
+  // 空字符串是有意义的：它区分“明确改为独立文章”和旧草稿尚未记录归属。
+  const draft = { ...post, seriesId: post.seriesId || '', createdAt: existing?.createdAt || now, updatedAt: now };
   await writeDraft(draft);
   return { post: draft };
 }
 
 export async function publishDraft(id) {
   const safeId = cleanText(id, 80, '文章 ID');
-  const { posts, drafts } = await readState();
+  const { posts, drafts, series } = await readState();
   const draftIndex = drafts.findIndex((item) => item.id === safeId);
   if (draftIndex === -1) throw new HttpError(404, '没有找到待发布草稿，请先保存');
 
@@ -207,11 +223,21 @@ export async function publishDraft(id) {
   const nextPosts = sortPosts(existingIndex === -1
     ? [entry, ...posts]
     : posts.map((item) => item.id === post.id ? { ...item, ...entry } : item));
-  const commit = await commitFiles([
+  const oldSeriesId = membership(series, post.id);
+  if (post.seriesId && !series.some((item) => item.id === post.seriesId)) throw new HttpError(409, '选择的系列不存在，请先创建系列');
+  const nextSeries = series.map((item) => {
+    const chapters = (item.chapters || []).filter((chapter) => chapter !== post.id);
+    if (item.id === post.seriesId) chapters.push(post.id);
+    return { ...item, chapters };
+  });
+  const seriesChanged = oldSeriesId !== (post.seriesId || '');
+  const changes = [
     { path: `blog/${post.file}`, content: formatMarkdown(post) },
     { path: INDEX_PATH, content: jsonFile(nextPosts) },
-    { path: 'sitemap.xml', content: generateSitemap(nextPosts) }
-  ], `${existingIndex === -1 ? 'content: 发布' : 'content: 更新'} ${post.title}`);
+    ...(seriesChanged ? [{ path: 'series/index.json', content: jsonFile(nextSeries) }] : []),
+    { path: 'sitemap.xml', content: generateSitemap(nextPosts, undefined, undefined, nextSeries) }
+  ];
+  const commit = await commitFiles(changes, `${existingIndex === -1 ? 'content: 发布' : 'content: 更新'} ${post.title}`);
 
   await removeDraft(drafts[draftIndex]);
   return { post: entry, commit, created: existingIndex === -1 };
@@ -230,7 +256,7 @@ export async function deleteDraft(id) {
 
 export async function unpublishPost(id) {
   const safeId = cleanText(id, 80, '文章 ID');
-  const { posts, drafts } = await readState();
+  const { posts, drafts, series } = await readState();
   const published = posts.find((item) => item.id === safeId);
   if (!published) throw new HttpError(404, '这篇文章当前没有发布');
   if (!/^[a-z0-9]+(?:-[a-z0-9]+)*\.md$/.test(published.file || '')) {
@@ -238,10 +264,13 @@ export async function unpublishPost(id) {
   }
 
   const nextPosts = posts.filter((item) => item.id !== safeId);
+  const nextSeries = series.map((item) => ({ ...item, chapters: (item.chapters || []).filter((chapter) => chapter !== safeId) }));
+  const seriesChanged = membership(series, safeId) !== '';
   const commit = await commitFiles([
     { path: `blog/${published.file}`, content: null },
     { path: INDEX_PATH, content: jsonFile(nextPosts) },
-    { path: 'sitemap.xml', content: generateSitemap(nextPosts) }
+    ...(seriesChanged ? [{ path: 'series/index.json', content: jsonFile(nextSeries) }] : []),
+    { path: 'sitemap.xml', content: generateSitemap(nextPosts, undefined, undefined, nextSeries) }
   ], `content: 下线 ${published.title}`);
   const draft = drafts.find((item) => item.id === safeId);
   if (draft) await removeDraft(draft);
