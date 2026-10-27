@@ -2,7 +2,7 @@
 title: 华润万家——加拿大介绍
 date: 2026-10-03
 tag: Notes
-category: 工程
+category: 博客
 ---
 
 ## 背景介绍：
