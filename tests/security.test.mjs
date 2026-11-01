@@ -196,7 +196,7 @@ test('发布系列章节会原子更新文章、系列目录和 sitemap', async 
 });
 
 test('所有内容接口在未登录时拒绝访问', async () => {
-  for (const [name, method] of [['posts', 'GET'], ['post', 'GET'], ['post', 'PUT'], ['publish', 'POST'], ['upload', 'POST'], ['series', 'GET'], ['series', 'PUT'], ['session', 'GET']]) {
+  for (const [name, method] of [['posts', 'GET'], ['analytics', 'GET'], ['post', 'GET'], ['post', 'PUT'], ['publish', 'POST'], ['upload', 'POST'], ['series', 'GET'], ['series', 'PUT'], ['session', 'GET']]) {
     const { default: handler } = await import(`../api/admin/${name}.mjs`);
     const res = response();
     await handler({ ...request(), method, url: `/api/admin/${name}`, body: {} }, res);

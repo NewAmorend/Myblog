@@ -21,8 +21,8 @@
   <main class="login-view" data-login-view>
     <section class="login-card" aria-labelledby="login-title">
       <a class="brand" href="../index.html">Amorend</a>
-      <p class="eyebrow">Private workspace</p>
-      <h1 id="login-title">回来写点东西。</h1>
+      <p class="eyebrow">写作后台</p>
+      <h1 id="login-title">登录后台</h1>
       <p class="login-copy">草稿私密保存，确认发布后才会出现在博客中。</p>
       <form class="login-form" data-login-form method="post" action="/api/admin/login">
         <label for="admin-password">后台密码</label>
@@ -41,12 +41,14 @@
       <header class="sidebar-header">
         <div>
           <a class="brand" href="../index.html">Amorend</a>
-          <p data-repository>Content desk</p>
+          <p data-repository>写作后台</p>
         </div>
         <button class="icon-button" type="button" data-logout title="退出登录" aria-label="退出登录">
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 17l5-5-5-5M15 12H3M14 3h5a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-5"/></svg>
         </button>
       </header>
+
+      <button class="analytics-nav" type="button" data-open-analytics aria-current="page"><span>流量统计</span></button>
 
       <div class="content-tabs" role="tablist" aria-label="内容类型">
         <button type="button" role="tab" aria-selected="true" data-library-mode="posts">文章</button>
@@ -65,7 +67,7 @@
 
       <div class="list-meta">
         <span data-post-count>0 篇内容</span>
-        <span class="sync-state"><i></i> Git 同步</span>
+        <span class="sync-state"><i></i> 私密草稿</span>
       </div>
       <nav class="post-list" data-post-list aria-label="文章列表"></nav>
     </aside>
@@ -77,14 +79,39 @@
         <button class="mobile-sidebar-button" type="button" data-sidebar-toggle aria-label="打开文章列表">
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
         </button>
-        <p><span class="connection-dot"></span> Repository connected</p>
+        <p><span class="connection-dot"></span> 博客后台</p>
         <a href="../index.html" target="_blank" rel="noopener">查看博客 ↗</a>
       </header>
 
-      <section class="empty-state" data-editor-empty>
+      <section class="analytics" data-analytics aria-labelledby="analytics-title">
+        <header class="analytics-heading">
+          <div><h1 id="analytics-title" tabindex="-1">流量统计</h1><p>Cloudflare · <span data-analytics-period>最近 7 个完整自然日</span></p></div>
+          <div class="analytics-actions">
+            <label><span class="sr-only">统计时间范围</span><select data-analytics-range><option value="7">最近 7 天</option><option value="30">最近 30 天</option></select></label>
+            <button class="button ghost" type="button" data-refresh-analytics>刷新</button>
+          </div>
+        </header>
+        <p class="analytics-message" data-analytics-message role="status" aria-live="polite">正在读取统计数据…</p>
+        <div data-analytics-content hidden>
+          <div class="analytics-metrics" data-analytics-metrics></div>
+          <section class="analytics-panel" aria-labelledby="trend-title">
+            <header><h2 id="trend-title">每日浏览量</h2><span>HTML 页面请求</span></header>
+            <div class="analytics-chart" data-analytics-chart></div>
+          </section>
+          <div class="analytics-breakdowns">
+            <section class="analytics-panel"><header><h2>访问地区</h2><span>请求量</span></header><div data-analytics-countries></div></section>
+            <section class="analytics-panel"><header><h2>浏览器</h2><span>浏览量</span></header><div data-analytics-browsers></div></section>
+          </div>
+          <details class="analytics-panel analytics-detail"><summary>每日明细</summary><div class="analytics-table-scroll"><table><thead><tr><th scope="col">日期（UTC）</th><th scope="col">浏览量</th><th scope="col">独立 IP</th><th scope="col">请求量</th><th scope="col">传输流量</th></tr></thead><tbody data-analytics-daily></tbody></table></div></details>
+          <p class="analytics-note">统计范围为整个 Cloudflare 域名，按 UTC 自然日汇总，不含今天。请求量包含静态资源和机器人；独立 IP 按天去重，不等同于真实人数。这里不提供文章排行或来源网站统计。</p>
+          <p class="analytics-updated" data-analytics-updated></p>
+        </div>
+      </section>
+
+      <section class="empty-state" data-editor-empty hidden>
         <div class="empty-mark">A</div>
-        <p class="eyebrow">Writing room</p>
-        <h1 data-empty-title>选一篇文章，或者从空白开始。</h1>
+        <p class="eyebrow">文章</p>
+        <h1 data-empty-title>选择文章或新建文章</h1>
         <p data-empty-copy>草稿保存在本机；点击发布后，才会进入公开文章列表。</p>
         <button class="button primary" type="button" data-empty-new>写新文章</button>
       </section>
@@ -93,7 +120,7 @@
         <form data-editor-form>
           <header class="editor-header">
             <div>
-              <p class="eyebrow">Current document</p>
+              <button class="back-to-analytics" type="button" data-open-analytics>← 流量统计</button>
               <div class="document-state">
                 <span class="status-pill" data-status>草稿</span>
                 <span data-save-state>所有更改已保存</span>
@@ -101,7 +128,8 @@
             </div>
             <div class="editor-actions">
               <a class="button ghost" data-live-link href="#" target="_blank" rel="noopener" hidden>线上页面 ↗</a>
-              <button class="button ghost" type="button" data-save>保存草稿</button>
+              <button class="button ghost" type="button" data-focus-mode aria-pressed="false">专注写作</button>
+              <button class="button ghost" type="button" data-save title="保存草稿（⌘ / Ctrl + S）">保存草稿</button>
               <button class="button primary" type="button" data-publish>发布</button>
             </div>
           </header>
@@ -119,6 +147,8 @@
               </div>
             </div>
 
+            <details class="post-settings" data-post-settings>
+              <summary>文章设置 <span>标签、摘要、系列与发布信息</span></summary>
             <div class="metadata-grid">
               <label>
                 <span>文章 ID</span>
@@ -154,6 +184,8 @@
               <textarea name="excerpt" rows="2" maxlength="500" placeholder="用一两句话说清楚这篇文章解决什么问题。"></textarea>
             </label>
 
+            </details>
+
             <div class="writing-toolbar">
               <div>
                 <button type="button" data-insert="**粗体**" title="粗体"><strong>B</strong></button>
@@ -184,7 +216,7 @@
             <footer class="danger-zone">
               <div>
                 <strong>内容操作</strong>
-                <p>删除和下线会产生 Git 提交，仍可从仓库历史中恢复。</p>
+                <p>删除草稿只影响私密存储；下线文章会修改公开站点。</p>
               </div>
               <div>
                 <button class="text-danger" type="button" data-delete-draft hidden>删除草稿</button>
@@ -199,7 +231,7 @@
         <form data-series-form>
           <header class="editor-header">
             <div>
-              <p class="eyebrow">Series outline</p>
+              <button class="back-to-analytics" type="button" data-open-analytics>← 流量统计</button>
               <div class="document-state"><span class="status-pill published">系列目录</span><span data-series-save-state>尚未修改</span></div>
             </div>
             <div class="editor-actions">

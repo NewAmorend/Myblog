@@ -2,6 +2,13 @@
   'use strict';
 
   const elements = {
+    analytics: document.querySelector('[data-analytics]'),
+    analyticsRange: document.querySelector('[data-analytics-range]'),
+    analyticsMessage: document.querySelector('[data-analytics-message]'),
+    analyticsContent: document.querySelector('[data-analytics-content]'),
+    analyticsRefresh: document.querySelector('[data-refresh-analytics]'),
+    postSettings: document.querySelector('[data-post-settings]'),
+    focusMode: document.querySelector('[data-focus-mode]'),
     loginView: document.querySelector('[data-login-view]'),
     loginForm: document.querySelector('[data-login-form]'),
     loginError: document.querySelector('[data-login-error]'),
@@ -60,6 +67,7 @@
   const state = {
     csrf: '',
     posts: [],
+    analyticsRequest: 0,
     series: [],
     libraryMode: 'posts',
     currentSeries: null,
@@ -105,6 +113,9 @@
     state.current = null;
     elements.appView.hidden = true;
     elements.loginView.hidden = false;
+    state.analyticsRequest++;
+    elements.analyticsContent.hidden = true;
+    setFocusMode(false);
     elements.loginError.textContent = message;
     const password = elements.loginForm.elements.password;
     password.value = '';
@@ -118,7 +129,8 @@
     }
     elements.loginView.hidden = true;
     elements.appView.hidden = false;
-    await task(refreshLibrary);
+    clearEditor();
+    await Promise.all([task(refreshLibrary), loadAnalytics()]);
   }
 
   function toast(message, type = 'success') {
@@ -192,6 +204,84 @@
     `).join('');
   }
 
+  function formatNumber(value) {
+    return Number(value || 0).toLocaleString('zh-CN');
+  }
+
+  function formatBytes(value) {
+    if (!value) return '0 B';
+    const unit = Math.min(3, Math.floor(Math.log(value) / Math.log(1024)));
+    return `${(value / 1024 ** unit).toFixed(unit ? 1 : 0)} ${['B', 'KB', 'MB', 'GB'][unit]}`;
+  }
+
+  function renderRanking(selector, items) {
+    document.querySelector(selector).innerHTML = items.length
+      ? `<ol class="analytics-ranking">${items.map((item) => `<li><span>${escapeHTML(item.name)}</span><strong>${formatNumber(item.value)}</strong></li>`).join('')}</ol>`
+      : '<p class="analytics-no-data">暂无数据</p>';
+  }
+
+  function renderAnalytics(data) {
+    const { totals, daily } = data;
+    document.querySelector('[data-analytics-period]').textContent = `${data.start} 至 ${data.end}（UTC）`;
+    const metrics = [
+      ['浏览量', formatNumber(totals.pageViews), 'HTML 页面请求'],
+      ['日均独立 IP', formatNumber(Math.round(totals.dailyUniqueIPs / daily.length)), '按天去重后取平均'],
+      ['请求量', formatNumber(totals.requests), '包含资源与机器人'],
+      ['传输流量', formatBytes(totals.bytes), `缓存命中率 ${totals.requests ? (totals.cachedRequests / totals.requests * 100).toFixed(1) + '%' : '—'}`]
+    ];
+    document.querySelector('[data-analytics-metrics]').innerHTML = metrics.map(([name, value, hint]) => `<div><span>${name}</span><strong>${value}</strong><small>${hint}</small></div>`).join('');
+    const max = Math.max(1, ...daily.map((day) => day.pageViews));
+    const points = daily.map((day, index) => `${40 + index * 920 / Math.max(1, daily.length - 1)},${180 - day.pageViews / max * 150}`).join(' ');
+    document.querySelector('[data-analytics-chart]').innerHTML = `<svg viewBox="0 0 1000 220" role="img" aria-label="每日浏览量趋势，详细数值见下方每日明细">
+      <text x="0" y="30">${formatNumber(max)}</text><text x="0" y="183">0</text>
+      <path d="M40 30H960 M40 105H960 M40 180H960" class="chart-grid"/>
+      <polyline points="${points}" class="chart-line"/>
+      ${daily.map((day, index) => `<circle cx="${40 + index * 920 / Math.max(1, daily.length - 1)}" cy="${180 - day.pageViews / max * 150}" r="3"><title>${escapeHTML(day.date)}：${formatNumber(day.pageViews)} 次浏览</title></circle>`).join('')}
+      <text x="40" y="212">${escapeHTML(data.start)}</text><text x="960" y="212" text-anchor="end">${escapeHTML(data.end)}</text></svg>`;
+    renderRanking('[data-analytics-countries]', data.countries);
+    renderRanking('[data-analytics-browsers]', data.browsers);
+    document.querySelector('[data-analytics-daily]').innerHTML = daily.map((day) => `<tr><th scope="row">${escapeHTML(day.date)}</th><td>${formatNumber(day.pageViews)}</td><td>${formatNumber(day.uniqueIPs)}</td><td>${formatNumber(day.requests)}</td><td>${formatBytes(day.bytes)}</td></tr>`).join('');
+    document.querySelector('[data-analytics-updated]').textContent = `读取时间：${new Date(data.fetchedAt).toLocaleString('zh-CN', { timeZone: 'Asia/Shanghai' })}（北京时间）`;
+  }
+
+  async function loadAnalytics() {
+    const request = ++state.analyticsRequest;
+    elements.analyticsRefresh.disabled = true;
+    elements.analyticsContent.hidden = true;
+    elements.analyticsMessage.hidden = false;
+    elements.analyticsMessage.textContent = '正在读取统计数据…';
+    try {
+      const data = await api(`/api/admin/analytics?days=${elements.analyticsRange.value}`);
+      if (request !== state.analyticsRequest) return;
+      if (!data.configured) {
+        elements.analyticsMessage.textContent = '尚未连接 Cloudflare。请在后台服务的环境变量中配置 CLOUDFLARE_API_TOKEN 和 CLOUDFLARE_ZONE_ID，再刷新此页。';
+        return;
+      }
+      renderAnalytics(data);
+      elements.analyticsMessage.hidden = true;
+      elements.analyticsContent.hidden = false;
+    } catch (error) {
+      if (request !== state.analyticsRequest) return;
+      if (error.status === 401) showLogin('登录已失效，请重新登录。');
+      else elements.analyticsMessage.textContent = `${errorMessage(error)}。可点击刷新重试，文章编辑不受影响。`;
+    } finally {
+      if (request === state.analyticsRequest) elements.analyticsRefresh.disabled = false;
+    }
+  }
+
+  function setFocusMode(active) {
+    document.body.classList.toggle('focus-writing', active);
+    elements.focusMode.setAttribute('aria-pressed', String(active));
+    elements.focusMode.textContent = active ? '退出专注' : '专注写作';
+  }
+
+  function showAnalytics() {
+    if (state.busy || !confirmDiscard()) return;
+    clearEditor();
+    document.body.classList.remove('sidebar-open');
+    document.querySelector('#analytics-title').focus();
+  }
+
   function renderSeriesOptions() {
     const selected = elements.postSeries.value;
     elements.postSeries.innerHTML = '<option value="">独立文章</option>' + state.series.map((item) =>
@@ -216,11 +306,14 @@
     elements.libraryModes.forEach((button) => button.setAttribute('aria-selected', String(button.dataset.libraryMode === mode)));
     elements.newLabel.textContent = mode === 'series' ? '新建系列' : '新建文章';
     elements.search.placeholder = mode === 'series' ? '搜索系列…' : '搜索标题、标签…';
-    elements.emptyTitle.textContent = mode === 'series' ? '选一个系列，或者建立新的目录。' : '选一篇文章，或者从空白开始。';
+    elements.emptyTitle.textContent = mode === 'series' ? '选一个系列，或者建立新的目录。' : '选择文章或新建文章';
     elements.emptyCopy.textContent = mode === 'series' ? '系列负责组织简介与章节顺序；正文仍在文章编辑器中完成。' : '草稿保存在本机；点击发布后，才会进入公开文章列表。';
     elements.emptyNew.textContent = mode === 'series' ? '新建系列' : '写新文章';
     elements.search.value = '';
     clearEditor();
+    elements.analytics.hidden = true;
+    elements.editorEmpty.hidden = false;
+    document.querySelectorAll("[data-open-analytics]").forEach((button) => button.removeAttribute("aria-current"));
   }
 
   function seriesIsPersisted() {
@@ -253,12 +346,18 @@
   }
 
   function setSeriesForm(item, persisted = true) {
+    window.scrollTo(0, 0);
+    state.current = null;
+    state.dirty = false;
+    setFocusMode(false);
     state.currentSeries = { ...item, chapters: [...(item.chapters || [])] };
     elements.seriesForm.elements.title.value = item.title || '';
     elements.seriesForm.elements.id.value = item.id || '';
     elements.seriesForm.elements.description.value = item.description || '';
     elements.seriesForm.elements.prerequisites.value = item.prerequisites || '';
     elements.seriesId.readOnly = persisted;
+    elements.analytics.hidden = true;
+    document.querySelectorAll('[data-open-analytics]').forEach((button) => button.removeAttribute('aria-current'));
     elements.editorEmpty.hidden = true;
     elements.editor.hidden = true;
     elements.seriesEditor.hidden = false;
@@ -287,6 +386,7 @@
   }
 
   function confirmDiscard() {
+    if (state.busy) return false;
     return (!state.dirty && !state.seriesDirty) || window.confirm('当前修改还没有保存，确定离开吗？');
   }
 
@@ -341,6 +441,7 @@
   }
 
   function setFormPost(current) {
+    window.scrollTo(0, 0);
     state.current = current;
     const post = current.post;
     elements.form.elements.title.value = post.title || '';
@@ -355,6 +456,8 @@
     elements.seriesHint.textContent = post.seriesId
       ? `当前是「${state.series.find((item) => item.id === post.seriesId)?.title || post.seriesId}」的章节。章节顺序可在“系列”中调整。`
       : '独立文章会显示在“文章”入口；选择系列后，发布时会自动追加为该系列的最后一章。';
+    elements.analytics.hidden = true;
+    document.querySelectorAll('[data-open-analytics]').forEach((button) => button.removeAttribute('aria-current'));
     elements.editorEmpty.hidden = true;
     elements.editor.hidden = false;
     elements.seriesEditor.hidden = true;
@@ -382,7 +485,7 @@
     const now = new Date();
     const date = now.toISOString().slice(0, 10).replace(/-/g, '');
     const time = `${String(now.getHours()).padStart(2, '0')}${String(now.getMinutes()).padStart(2, '0')}`;
-    return `post-${date}-${time}`;
+    return `post-${date}-${time}-${crypto.randomUUID().slice(0, 8)}`;
   }
 
   function newPost() {
@@ -401,6 +504,8 @@
   }
 
   function gatherPost() {
+    if (!state.current) return null;
+    if (!elements.form.checkValidity()) { setFocusMode(false); elements.postSettings.open = true; }
     if (!elements.form.reportValidity()) return null;
     return {
       id: elements.form.elements.id.value.trim(),
@@ -479,13 +584,17 @@
   }
 
   function clearEditor() {
+    window.scrollTo(0, 0);
     state.current = null;
     state.currentSeries = null;
     state.dirty = false;
     state.seriesDirty = false;
     elements.editor.hidden = true;
     elements.seriesEditor.hidden = true;
-    elements.editorEmpty.hidden = false;
+    elements.editorEmpty.hidden = true;
+    elements.analytics.hidden = false;
+    setFocusMode(false);
+    document.querySelector('.analytics-nav').setAttribute('aria-current', 'page');
     renderPostList();
   }
 
@@ -495,8 +604,16 @@
     const end = textarea.selectionEnd;
     if (prefix) {
       const lineStart = textarea.value.lastIndexOf('\n', start - 1) + 1;
-      textarea.setRangeText(text, lineStart, lineStart, 'end');
+      const selectedLines = textarea.value.slice(lineStart, end);
+      textarea.setRangeText(text + selectedLines.replace(/\n(?!$)/g, `\n${text}`), lineStart, end, 'select');
     } else {
+      const selection = textarea.value.slice(start, end);
+      if (selection) {
+        if (text === '**粗体**') text = `**${selection}**`;
+        else if (text === '_斜体_') text = `_${selection}_`;
+        else if (text === '[链接文字](https://)') text = `[${selection}](https://)`;
+        else if (text.includes('```text')) text = `\n\`\`\`text\n${selection}\n\`\`\`\n`;
+      }
       textarea.setRangeText(text, start, end, 'select');
     }
     textarea.focus();
@@ -616,6 +733,11 @@
     const seriesButton = event.target.closest('[data-series-id]');
     if (seriesButton) openSeries(seriesButton.dataset.seriesId);
   });
+  document.querySelectorAll('[data-open-analytics]').forEach((button) => button.addEventListener('click', showAnalytics));
+  elements.analyticsRefresh.addEventListener('click', loadAnalytics);
+  elements.analyticsRange.addEventListener('change', loadAnalytics);
+  elements.focusMode.addEventListener('click', () => setFocusMode(!document.body.classList.contains('focus-writing')));
+  elements.form.addEventListener('submit', (event) => { event.preventDefault(); saveDraft(); });
   elements.save.addEventListener('click', () => saveDraft());
   elements.publish.addEventListener('click', publish);
   elements.deleteDraft.addEventListener('click', removeDraft);
@@ -665,6 +787,7 @@
     if (event.target === elements.content) updateWordCount();
     schedulePreview();
   });
+  elements.form.addEventListener('invalid', () => { setFocusMode(false); elements.postSettings.open = true; }, true);
   elements.id.addEventListener('input', () => { state.slugTouched = true; });
 
   document.querySelectorAll('[data-mode]').forEach((button) => {
@@ -678,6 +801,7 @@
   document.querySelectorAll('[data-prefix]').forEach((button) => button.addEventListener('click', () => insertText(button.dataset.prefix, true)));
 
   document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') setFocusMode(false);
     if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 's') {
       event.preventDefault();
       if (state.current) saveDraft();
