@@ -5,7 +5,9 @@ import { JSDOM } from 'jsdom';
 
 const sample = {id:'test-note',file:'test-note.md',title:'测试文章',excerpt:'关于检索的笔记',date:'2026-09-22',category:'工程',tag:'AI',translations:{en:{file:'test-note.en.md',title:'A test note',excerpt:'Notes about retrieval'}}};
 async function setup(page='blog',query='',options={}) {
-  const dom = new JSDOM(await readFile(`${page === 'home' ? 'index' : page}.html`,'utf8'),{url:`https://blog.test/${page === 'home' ? 'index' : page}.html${query}`,runScripts:'outside-only'});
+  const filename = `${page === 'home' ? 'index' : page}.html`;
+  const url = new URL(filename + query, options.baseUrl ?? 'https://blog.test/');
+  const dom = new JSDOM(await readFile(filename,'utf8'),{url:url.href,runScripts:'outside-only'});
   const {window:w}=dom;
   let failures=options.failures || 0;
   w.fetch=async (url) => {
@@ -105,11 +107,46 @@ test('首页只有简介与入口，不请求内容索引或显示顶部导航',
   assert.equal(w.document.querySelector('.site-header'),null);
   assert.equal(w.document.querySelector('[data-home-posts]'),null);
   assert.match(w.document.querySelector('.bio').textContent,/AI/);
-  assert.equal(w.document.querySelectorAll('.home-entries a').length,2);
+  const entries=[...w.document.querySelectorAll('.home-entries a')];
+  assert.deepEqual(entries.map(link=>link.textContent),['系列','文章','实习']);
+  const internships=new URL(entries[2].href);
+  assert.equal(internships.pathname,'/internships.html');
+  assert.equal(internships.searchParams.has('category'),false);
   w.document.querySelector('[data-language-toggle]').click();await settle();
-  assert.equal(w.document.querySelector('.home-entries a').textContent,'Series');
-  assert.match(w.document.querySelector('.home-entries a').href,/lang=en/);
+  assert.deepEqual(entries.map(link=>link.textContent),['Series','Articles','Internships']);
+  const translated=new URL(entries[2].href);
+  assert.equal(translated.pathname,'/internships.html');
+  assert.equal(translated.searchParams.get('lang'),'en');
  }finally{w.close();}
+});
+
+test('实习页独立于文章索引，并支持语言和主题切换',async()=>{
+ for(const baseUrl of ['https://blog.test/',new URL('../',import.meta.url)]){
+  const dom=await setup('internships','?lang=en',{failures:10,baseUrl});const w=dom.window;
+  try{
+   assert.equal(w.document.querySelector('h1').textContent,'Internships');
+   assert.equal(w.document.title,'Internships · Amorend');
+   w.document.querySelector('[data-language-toggle]').click();
+   w.document.querySelector('[data-theme-toggle]').click();
+   assert.equal(w.document.querySelector('h1').textContent,'实习');
+   assert.equal(w.document.title,'实习 · Amorend');
+   assert.equal(w.document.documentElement.dataset.theme,'dark');
+   assert.equal(new URL(w.document.querySelector('.nav-links a').href).searchParams.get('lang'),'zh');
+  }finally{w.close();}
+ }
+});
+
+test('内页共享相同的导航顺序，阅读页标记所属栏目',async()=>{
+ for(const [page,query,current] of [['series','','series'],['blog','','blog'],['internships','','internships'],['article','&post=test-note','blog']]){
+  const dom=await setup(page,`?lang=en${query}`);const w=dom.window;
+  try{
+   const links=[...w.document.querySelectorAll('.nav-links a')];
+   assert.deepEqual(links.map(link=>link.textContent),['Series','Articles','Internships']);
+   assert.deepEqual(links.map(link=>new URL(link.href).pathname),['/series.html','/blog.html','/internships.html']);
+   assert.ok(links.every(link=>new URL(link.href).searchParams.get('lang')==='en'));
+   assert.deepEqual(links.filter(link=>link.getAttribute('aria-current')==='page').map(link=>link.dataset.nav),[current]);
+  }finally{w.close();}
+ }
 });
 
 test('独立文章列表排除系列章节，搜索和数量只针对独立文章',async()=>{

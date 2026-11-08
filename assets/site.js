@@ -208,7 +208,7 @@
     const version = ++renderVersion;
     renderedSearch = location.search;
     syncShell();
-    if (page === 'home') return;
+    if (page === 'home' || page === 'internships') return;
     try {
       const items = await loadPosts();
       if (version !== renderVersion) return;
